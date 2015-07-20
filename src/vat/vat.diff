@@ -1,0 +1,9 @@
+36c36,37
+< from spower.utils import env, downloadFile, hasCommand, runCommand, Field
+---
+> from .project import Field
+> from .utils import env, downloadFile, hasCommand, runCommand
+30c30
+< from spower.utils import env, downloadFile, runCommand, mkdir_p
+---
+> from .utils import env, downloadFile, runCommand, mkdir_p

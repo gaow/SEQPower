@@ -1,0 +1,566 @@
+* commit f8e6624d62c8aba0ba5abe238feed1f0d432c1ba
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed May 13 20:37:02 2015 -0500
+| 
+|     major: use entire haplotype pool for qt power calc when pool size equals sample size
+|  
+* commit fecccae43bf144317730e19495f891ccb4fac69f
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu May 7 16:57:34 2015 -0500
+| 
+|     fix: minor bugs due to typos
+|  
+* commit ca6cbc7a9e46aca231fb3554a561b75b74a07277
+| Author: Di Zhang <zhangdi.devel@gmail.com>
+| Date:   Thu Apr 30 20:13:13 2015 -0500
+| 
+|     fix: fix table name issue for spower show *.gdat
+|  
+* commit 66e924bdaeb30f131edcaa1eb9775f14ac8afe5b
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Apr 30 12:05:16 2015 -0500
+| 
+|     major: optimize srv storage implementation: slower for small variant pools but faster and less ram usage for larger
+|  
+* commit 40d64e130c2ee6edd0b21121437f1da9818b97b2
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Apr 28 10:47:27 2015 -0500
+| 
+|     add spower-vst
+|  
+* commit 00b51433a90ae60c7887f96984f3267defdc6dfe
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Apr 24 10:57:39 2015 -0500
+| 
+|     minor: allow for the use of index file in addition to gdat file so that only desired unit names are loaded
+|  
+* commit eb189b159b520caea4701f88b43e4de360570b5c
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Apr 22 20:44:36 2015 -0500
+| 
+|     Fixes to output format
+|  
+* commit 98ac304d04037e2966559f36a841faa9c48f2c6d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Apr 22 11:07:19 2015 -0500
+| 
+|     Allow for customized message in gdata
+|  
+* commit c221040a7145a1cd5fdff6da5088d5170583c055
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Apr 22 10:44:19 2015 -0500
+| 
+|     Bypass the use of temp pool files in srv code; clean up codes
+|  
+* commit 87b4a0ad05a4befc18f9c5d3bc36e4c4d5fbda8b
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Apr 21 22:31:28 2015 -0500
+| 
+|     srv works now with gdat
+|  
+* commit f8da860299d01c6953c1b5fe3249965977d8487e
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Apr 21 15:49:31 2015 -0500
+| 
+|     add new gdat file manipulation options to spower show command
+|  
+* commit 48a499c2a7183bba05af808ad61df2a8a6c09c24
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Apr 21 11:32:36 2015 -0500
+| 
+|     Fix srvbatch
+|  
+* commit 74eb04fed9190bca2bb6e0c4503e2582e6c0972e
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Apr 21 11:24:43 2015 -0500
+| 
+|     Reimplement GData using HDF5
+|  
+* commit af3c66b65938f157b441c118c3cf067e4d4d07d7
+| Author: Di Zhang <zhangdi.devel@gmail.com>
+| Date:   Tue Apr 7 11:00:29 2015 -0500
+| 
+|     Import statsmodel api for logistic regression
+|  
+* commit 87768a15528114be77a69ad44014f1be7f15bda2
+| Author: Di Zhang <zhangdi.devel@gmail.com>
+| Date:   Tue Apr 7 10:49:45 2015 -0500
+| 
+|     Fix error when running more than 2 QuickRegression instances
+|  
+* commit 577a9801f9c4afcff2cb6b7af68582ff49fd4da6
+| Author: Min Qiao <min@lupinus>
+| Date:   Mon Apr 6 14:44:21 2015 -0500
+| 
+|     completed QuickRegression routine with condensed genotype matrix
+|  
+* commit 4caf22d88081c3085e15794fc9179baaf500a203
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Apr 6 10:30:03 2015 -0500
+| 
+|     commit quick regression
+|    
+*   commit 483e6b1db67030baa766b0912b72e0f58df4c261
+|\  Merge: a70310b b10ddd6
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Tue Mar 3 15:10:53 2015 -0600
+| | 
+| |     Merge branch 'master' of tigerwang.org:SEQPower
+| |     
+| *   commit b10ddd6040d9b9f5dc2f05337aa1a63e227cec01
+| |\  Merge: eb199c6 d6f53dc
+| | | Author: Di Zhang <zhangdi.devel@gmail.com>
+| | | Date:   Tue Mar 3 14:46:48 2015 -0600
+| | | 
+| | |     Merge branch 'master' of tigerwang.org:SEQPower
+| | |    
+| * | commit eb199c6645123d1ef1b6255755ecc3b6f76e431e
+| | | Author: Di Zhang <zhangdi.devel@gmail.com>
+| | | Date:   Tue Mar 3 14:45:52 2015 -0600
+| | | 
+| | |     hide simuPOP banner from setup.py
+| | |    
+* | | commit a70310bc0d81cdde3a3c8911e86787d5badd7cba
+| |/  Author: Gao Wang <gaow@bcm.edu>
+|/|   Date:   Tue Mar 3 15:10:46 2015 -0600
+| |   
+| |       Fix error message when swig is not installed
+| |   
+* | commit d6f53dc044e5f49a7d86b638b6d20b92e4bbfff7
+|/  Author: Gao Wang <gaow@bcm.edu>
+|   Date:   Tue Mar 3 09:31:53 2015 -0600
+|   
+|       Add wrapper files to git (to avoid swig requirement)
+|  
+* commit 2dd35d0608e137042b7c7fb6eaaf55be3b61424d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Mar 2 15:59:11 2015 -0600
+| 
+|     another version fix ...
+|  
+* commit f1a4216c6df2a7b69d4bb622a5cde5e28e8b0b25
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Mar 2 15:17:29 2015 -0600
+| 
+|     hide simuPOP banner
+|  
+* commit 960ade04442acbe70a8470021760c8d684673546
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Mar 2 15:03:56 2015 -0600
+| 
+|     more fix to version number
+|  
+* commit 13b77b73bf3605179f147935230c0146ba263075
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Mar 2 14:25:22 2015 -0600
+| 
+|     add revision number file
+|  
+* commit d8113897752cc1265be52a2a1e527c33fb06dda0
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Mar 2 14:03:41 2015 -0600
+| 
+|     Anaconda related changes
+|  
+* commit 1f34ead0db66dac5347432c139ec216b885ac9e0
+| Author: Min Qiao <min@lupinus>
+| Date:   Sat Feb 28 09:23:54 2015 -0600
+| 
+|     move gsl folder to src
+|  
+* commit 3e6dbb56dc3cfe769125893bbc23523a3c270d2f
+| Author: Min Qiao <min@lupinus>
+| Date:   Sat Feb 28 09:18:27 2015 -0600
+| 
+|     clean up gsl source
+|  
+* commit 4d3ab1b6c3bb500be758a2973c6f9d4f2b64c612
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Feb 27 17:11:21 2015 -0600
+| 
+|     Fix gcc compiler switch to work with AMD platform
+|  
+* commit 8d5cc7e37a4360ee974e76c1bb0de677eb473342
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Feb 27 16:35:19 2015 -0600
+| 
+|     move VAT out to cstatgen
+|  
+* commit c9e3e41a95129e9414fae6ed28d5ecdaf1fab2fb
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Feb 27 15:13:40 2015 -0600
+| 
+|     Move gsl and boost math to cstatgen
+|  
+* commit b419613b11b397d02db675f777c29bb4ae1c980d
+| Author: Min Qiao <min@lupinus>
+| Date:   Tue Feb 3 18:37:34 2015 -0600
+| 
+|     Make --verbosity 0 work for log files
+|    
+*   commit e123a7a9e06090c91ed5ea70e0269275b0bd4502
+|\  Merge: 1b95598 a858559
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Tue Feb 3 11:48:48 2015 -0600
+| | 
+| |     Merge branch 'master' of tigerwang.org:SEQPower into cstatgen_based
+| |   
+| * commit a8585599c5696b60fac9e562c10fced3bd5d82eb
+| | Author: Min Qiao <mqiao@cnode339.mdanderson.edu>
+| | Date:   Mon Feb 2 22:18:03 2015 -0600
+| | 
+| |     Always allow for SRV module be compiled
+| |   
+| * commit 6ee069057f44950e3e7e26b78abf232f16db0a43
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Fri Jan 30 14:03:12 2015 -0600
+| | 
+| |     Upgrade SCORESEQ software
+| |   
+* | commit 1b95598e39d55021fda5ea58dc8db6d70b9e75fc
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Tue Feb 3 11:47:14 2015 -0600
+| | 
+| |     Separate output text and database files; allow for append mode in output
+| |   
+* | commit 3b85c2f63be0f492351ad2fbb7580084cc828b1e
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Mon Feb 2 21:36:23 2015 -0600
+| | 
+| |     Remove cache folder from current directory (because it is barely used)
+| |   
+* | commit c3f25b3473b225cce6ea357ee921b045550aa800
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Mon Feb 2 16:49:15 2015 -0600
+| | 
+| |     Check if table exists in database before using it
+| |   
+* | commit 77597aadd8454eb72874a7094105e06f114b5098
+| | Author: Gao Wang <gaow@bcm.edu>
+| | Date:   Mon Feb 2 15:30:10 2015 -0600
+| | 
+| |     Fix replicate names when replicates = -1; allow for more timeout for result SQLite3 database
+| |   
+* | commit ec495cb1fc739912f07f5aeeb94c3983f1e801b7
+|/  Author: Gao Wang <gaow@bcm.edu>
+|   Date:   Fri Jan 30 17:54:44 2015 -0600
+|   
+|       add RVTests methods
+|  
+* commit 7d5962db566e3adb6dfe64e8e17a046d1da527fb
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Jan 26 13:55:39 2015 -0600
+| 
+|     Move programs to Package folder and documentation to Wiki folder
+|  
+* commit f076bcc050ec8f3f5f1b73eb491d7bceed2b0c7f
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Sep 18 17:02:30 2014 -0500
+| 
+|     fix installer
+|  
+* commit 10fd08630bc1773ff651dec263607aea3489d12e
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Aug 20 16:33:00 2014 -0500
+| 
+|     no lite version for release from now on
+|  
+* commit 9414385a0c7ece78f755e8592140e893a56632e8
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Aug 20 16:15:33 2014 -0500
+| 
+|     critical bug fix
+|  
+* commit fd252f99d3d0545e2bb7dd836f4ed9d8c9d58d9d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Jun 6 20:39:32 2014 -0500
+| 
+|     bug fixes
+|  
+* commit 4fbfdf35b50261379d3d1fb89174938634eeb2ac
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Jun 6 19:54:49 2014 -0500
+| 
+|     add exome chip design
+|  
+* commit afaaa5918e8c51bcfdb08a807b8c04e71a986eda
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jun 4 21:49:15 2014 -0500
+| 
+|     updates to plot functions
+|  
+* commit a4da50e41cc5fd622cb54e3fd37f73c896f9c846
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu May 29 11:43:32 2014 -0500
+| 
+|     improve plotter class
+|  
+* commit d1130f24e134a3078d891e8bf710dfeff6b53606
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed May 28 16:13:09 2014 -0500
+| 
+|     allow for maf bounds in skat
+|  
+* commit 361cf09b56ce3c8d20b23e8714917cd45e1a7d32
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Sun May 25 19:04:02 2014 -0500
+| 
+|     minor fixes
+|  
+* commit f60ead0805f42f6d398fff2f1e4747693b763fd2
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu May 22 13:21:42 2014 -0500
+| 
+|     minor fixes
+|  
+* commit f7b2db6b87716db802ec4710c97ca17846d3ccb9
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu May 22 09:54:40 2014 -0500
+| 
+|     robust cache folder creation
+|  
+* commit 46ae85f6bbede089f2217a1ffde06d055dbd0d0d
+| Author: Min Qiao <min@lupinus>
+| Date:   Thu May 22 08:51:52 2014 -0500
+| 
+|     fix runcommand path
+|  
+* commit fd2e1541e8a7b780480ebbdd7d8b81b1b6fff19d
+| Author: Min Qiao <min@lupinus>
+| Date:   Thu May 22 08:07:19 2014 -0500
+| 
+|     better handling of kernal 2.6.18 bundles
+|  
+* commit 31cede3bb03bed7ef137833a34507ce2a2892a15
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu May 22 07:24:57 2014 -0500
+| 
+|     minor bug fix
+|  
+* commit dd4d9f5d4f9e1aa0a678faba70a79b7149cc5216
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed May 21 23:43:59 2014 -0500
+| 
+|     implementation of SFSFile object in gdata; use it in manager.py
+|  
+* commit 055e7b69315fd92b4a3f33876631686e6b51f11a
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed May 21 13:13:00 2014 -0500
+| 
+|     minor bug fixes
+|  
+* commit 7f82a8e3e2b8a15a0be6f6eb0860c67a56515fcf
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed May 21 10:37:05 2014 -0500
+| 
+|     allow for scan replicates over the entire file input and compute average power
+|  
+* commit 0abd04516f171d70b52c9879e0f409c57ac315cd
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon May 19 15:33:24 2014 -0500
+| 
+|     final update to srvbatch
+|  
+* commit 8beff80f6ce9f535095bfce8b43a3d72571b6f29
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Sat May 17 08:37:31 2014 -0500
+| 
+|     fix srvbatch
+|  
+* commit e59c1ffc059174984c67ce2d7628472303c72b7d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Sat May 17 08:36:33 2014 -0500
+| 
+|     fix srvbatch
+|  
+* commit eb5451d896f1d3a50f22702a97d0c8bdf91ff2fc
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Mar 28 17:19:56 2014 -0500
+| 
+|     fix ccache
+|  
+* commit eef43fb836304b8b6e5c51aefd9ccbb993f052be
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Mar 28 15:52:15 2014 -0500
+| 
+|     change 'deleterious' to 'detrimental' wherever necessary on interface, by Suzanne's request
+|  
+* commit 6cdfc36abc9196441972a26eaa524df9ab5f46e9
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Mar 6 16:20:36 2014 -0600
+| 
+|     fix setup.py
+|  
+* commit 17fbab80a4459f0156227251e871acee6dcfc008
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Mar 6 12:26:36 2014 -0600
+| 
+|     improve setup.py
+|  
+* commit e2b7be05624a4a74b7b55dc34e8f4997ea8a79c6
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 22 09:33:22 2014 -0600
+| 
+|     updated rc1 release 5
+|  
+* commit 4efc1082f0cdd80f95970c70dcfcade33ba071da
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 22 09:30:22 2014 -0600
+| 
+|     updated rc1 release 3
+|  
+* commit 8df4625d4ce9dde11c3e7482c30356524a18cbf6
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 22 09:29:04 2014 -0600
+| 
+|     updated rc1 release 2
+|  
+* commit 202c9bfc918f4684b1ea2586ad9f04aa1f7222e6
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 22 09:27:14 2014 -0600
+| 
+|     updated rc1 release
+|  
+* commit f46073647c91c5da39d140d9e5957ab68fa2d803
+| Author: Min Qiao <min@lupinus>
+| Date:   Wed Jan 22 08:20:12 2014 -0600
+| 
+|     complete output to haplotype as a reviewer request
+|  
+* commit 326e66f799714786a439a6d52f1cef992e433d42
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Jan 21 19:07:40 2014 -0600
+| 
+|     change of today
+|  
+* commit 0e8efd4d5cf5f5c0df593f4de871ee2bc21995e7
+| Author: Min Qiao <min@lupinus>
+| Date:   Mon Jan 20 19:08:12 2014 -0600
+| 
+|     use prettytable for spower show
+|  
+* commit 2b261c21094fe58b9c85b921d54b3dfa6641fb37
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Jan 16 23:51:41 2014 -0600
+| 
+|     more improvement on release.py
+|  
+* commit 85db2b3a5509083d91c8db38a789fdc3d9521d8d
+| Author: Min Qiao <min@lupinus>
+| Date:   Thu Jan 16 23:17:38 2014 -0600
+| 
+|     improve release.py
+|  
+* commit bca97356165842409c4b79f236e05a662bb8861b
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Jan 16 18:45:49 2014 -0600
+| 
+|     minor fixes, ready for 1.0rc1
+|  
+* commit 493634396bd4e11e70fb207bd60fb76515101e14
+| Author: Min Qiao <min@lupinus>
+| Date:   Wed Jan 15 23:12:38 2014 -0600
+| 
+|     improve lite version package
+|  
+* commit 2e1e72b9e6536449840a7bc45eb909d89664b756
+| Author: Min Qiao <min@lupinus>
+| Date:   Wed Jan 15 21:35:46 2014 -0600
+| 
+|     make an option to include simulate function; add --lite option to release.py
+|  
+* commit e468f5460b2e7f483f4208ca73fe6534980a123a
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 15 18:59:43 2014 -0600
+| 
+|     add simulate command
+|  
+* commit de9e58cd2be90e22cff2a7d381c37b99df33218d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Jan 14 12:26:11 2014 -0600
+| 
+|     add a backdorr for biaoge
+|  
+* commit 04fae937a1ae8d4fcb3cf5ab4dd4242864e724f2
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Jan 14 08:58:07 2014 -0600
+| 
+|     add dump args function for Biao to use
+|  
+* commit d9aa7607db9edadf59cfae412e79ec059629c11d
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Jan 13 17:11:22 2014 -0600
+| 
+|     add --limit option; small bug fixes
+|  
+* commit 74056c759385dda97c4f71df00766cbce87b253e
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Wed Jan 8 13:00:46 2014 -0600
+| 
+|     fix terminal progress bar bug; use replicate id for GroupWrite filenames
+|  
+* commit b1c44332dc8ae9eca81ec434f48b20cdad17daf3
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Tue Jan 7 18:02:01 2014 -0600
+| 
+|     fix SKAT test; improve installer
+|  
+* commit 3b84216d9bef57775f289b322804fdbe688acbb4
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Jan 6 19:47:59 2014 -0600
+| 
+|     properly handle NullResultException
+|  
+* commit 9d18f395b1bb56cbe2462af403e01551ae791ca4
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Jan 6 16:02:52 2014 -0600
+| 
+|     fix index error when power is empty
+|  
+* commit 8fabdf99559d391eb38a276476649f52b92dbce9
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Mon Jan 6 12:54:02 2014 -0600
+| 
+|     implemented show fields from database
+|  
+* commit 6af84e7ebee36a2274ebc086b4fc84b7976741d5
+| Author: Min Qiao <min@lupinus>
+| Date:   Sun Jan 5 15:57:38 2014 -0600
+| 
+|     complete plot pipeline
+|  
+* commit c1918ce3c6cc1c26e45e53c2a5faf8f420dcee56
+| Author: Min Qiao <min@lupinus>
+| Date:   Sat Jan 4 22:07:30 2014 -0600
+| 
+|     more adjustment on output format
+|  
+* commit af6ca94c650c7bf709d0555fb8b37a5f0c51e2ec
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Jan 3 23:30:47 2014 -0600
+| 
+|     adjust interface and file modules
+|  
+* commit 4c5ed0932c5fcaa0b6c2bdc913e4add6e05e2903
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Fri Jan 3 10:04:43 2014 -0600
+| 
+|     fix double/single quote issue in --methods for pipeline
+|  
+* commit ed7f740c52cfc585bc8cebec4469457d85f83bfd
+| Author: Min Qiao <min@lupinus>
+| Date:   Thu Jan 2 23:50:40 2014 -0600
+| 
+|     various fixes to benckmark.py; roughly working now
+|  
+* commit fa9b4b7a5a17d4ae713a4bd3b4085a49323a1206
+| Author: Gao Wang <gaow@bcm.edu>
+| Date:   Thu Jan 2 18:07:59 2014 -0600
+| 
+|     minor fixes
+|  
+* commit dc2ba147a1b59efdf4f7056153cd7c3c19cfbaee
+  Author: Gao Wang <gaow@bcm.edu>
+  Date:   Thu Jan 2 14:12:16 2014 -0600
+  
+      initial commit

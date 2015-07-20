@@ -1,0 +1,402 @@
+#!/usr/bin/env python
+# Author: Biao Li (biaol@bcm.edu)
+# Copyright: Biao Li 2014 (GNU)
+# date: 09-01-2014
+'''
+This is a standalone script using VST to simulate variants for European and African populations using 2 recently published models
+'''
+import simuOpt
+simuOpt.setOptions(alleleType='mutant', optimized=True, quiet=True)
+import simuPOP as sim
+from simuPOP.demography import *
+from variant_tools.simulation import *
+from variant_tools.pipeline import *
+from spower.gdata import GData
+import sys, subprocess, os
+import argparse, random, time
+from collections import Counter
+
+class Environment:
+    def __init__(self):
+        self.refgene = 'refGene_exon'
+        self.ccdsgene = 'ccdsGene_exon'
+        self.vst_bypass = '.vst.txt'
+        self.cache = 'cache'
+
+env = Environment()
+        
+class European_Gazave2013Model(EventBasedModel):
+    """A demographic model for Europeans, as defined in Gazave et al., 2013, PNAS"""
+    def __init__(self,  T0,  N0=10000,  N1=5633,  T1=620,  T2=141,  r=0.034,
+        ops=[], infoFields=[], scale=1): # r=0.034295
+        '''This model started at ``T0`` generation ago (``T0 > 1000``) with ``N0``
+        individuals, underwent a bottleneck at ``T1`` generations ago which
+        instantly reduced population size to ``N1`` and grew exponentially from
+        ``T2`` generations ago to current time with rate ``r``, reaching a
+        current population of about 654,000 individuals. If a scaling
+        factor ``scale`` is specified, all population sizes and generation 
+        numbers will be divided by a factor of ``scale``.'''
+        if T0 < T1:
+            raise ValueError('Length of evolution T0=%d should be more than T_1=%d' % (T0, T1))
+        #
+        scale = float(scale)
+        #
+        EventBasedModel.__init__(self,
+            T = int(T0/scale),
+            N0 = int(N0/scale),
+            infoFields=infoFields,
+            events = [
+                ResizeEvent(at= -int(T1/scale), sizes=int(N1/scale)),
+                # exponential growth 
+                ExpansionEvent(begin=-int(T2/scale),
+                    rates=r*scale)
+            ]
+        )
+
+
+class African_Excoffier2013Model(EventBasedModel):
+    """A demographic model for Africans, as defined in Excoffier et al., 2013, PLoS Genetics"""
+    def __init__(self,  T0,  N0=5480,  N1=3654,  T1=298,  T2=298,  r=0.014297, 
+        ops=[], infoFields=[], scale=1):
+        '''This model started at ``T0`` generation ago (``T0 > 1000``) with ``N0``
+        individuals, underwent a bottleneck at ``T1`` generations ago which instantly
+        reduced population size to ``N1`` and grew exponentially from ``T2`` generations
+        ago to current time with rate ``r``, each a current population of about 251,150
+        individuals. If a scaling factor ``scale`` is specified, all population sizes
+        and generation numbers will be divided by a factor of ``scale``.'''
+        if T0 < T1:
+            raise ValueError('Length of evolution T0=%d should be more than T_1=%d' % (T0, T1))
+        #
+        scale = float(scale)
+        #
+        EventBasedModel.__init__(self,
+            T = int(T0/scale),
+            N0 = int(N0/scale),
+            infoFields=infoFields,
+            events = [
+                ResizeEvent(at= -int(T1/scale), sizes=int(N1/scale)),
+                # exponential growth 
+                ExpansionEvent(begin=-int(T2/scale),
+                    rates=r*scale)
+            ]
+        )
+
+
+class NoAS_OutOfAfricaModel(MultiStageModel):
+    '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
+    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
+    default parameters are listed in Table 1 of this paper. The AF population is
+    removed from the model after it splits into AF and B.'''
+    def __init__(self, 
+        T0,
+        N_A=7300,
+        N_AF=12300,
+        N_B=2100,
+        N_EU0=1000,
+        r_EU=0.004,
+        N_AS0=510,
+        r_AS=0.0055,
+        m_AF_B=0.00025,
+        m_AF_EU=0.00003,
+        T_AF=220000//25, 
+        T_B=140000//25, 
+        T_EU_AS=21200//25, 
+        ops=[],
+        infoFields=[],
+        scale=1
+        ):
+        '''Counting **backward in time**, this model evolves a population for ``T0``
+        generations (required parameter). The ancient population ``A`` started at
+        size ``N_A`` and expanded at ``T_AF`` generations from now, to pop ``AF``
+        with size ``N_AF``. Pop ``B`` split from pop ``AF`` at ``T_B`` generations
+        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. 
+        Pop ``EU`` and  ``AS`` split from pop ``B`` at ``T_EU_AS`` generations
+        from now; with size ``N_EU0`` individuals and ``N_ASO`` individuals,
+        respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
+        ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
+        ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
+        respectively. Additional operators could be added to ``ops``. Information
+        fields required by these operators should be passed to ``infoFields``. If 
+        a scaling factor ``scale`` is specified, all population sizes and
+        generation numbers will be divided by a factor of ``scale``.
+
+        This model merges all subpopulations if it is applied to a population with
+        multiple subpopulation.
+        '''
+        #
+        if T0 < T_AF:
+            raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        # for python 2.x and 3.x compatibility
+        scale = float(scale)
+        MultiStageModel.__init__(self, [
+            InstantChangeModel(
+                T=int((T0-T_B)/scale),
+                N0=(int(N_A/scale), 'Ancestral'),
+                # change population size twice, one at T_AF, one at T_B
+                G=[int((T0-T_AF)/scale)],
+                NG=[(int(N_AF/scale), 'AF')] 
+            ),
+            #
+            # at T_B, split to population B from subpopulation 1
+            InstantChangeModel(
+                T=int((T_B - T_EU_AS)/scale),
+                # change population size twice, one at T_AF, one at T_B
+                N0=[None, (int(N_B/scale), 'B')],
+                ops=sim.Migrator(rate=[
+                    [0, m_AF_B],
+                    [m_AF_B, 0]])
+                ),
+            #
+            ExponentialGrowthModel(
+                T=int(T_EU_AS/scale),
+                # 
+                # shrnk Nb to N_EU0
+                N0 = [None, (int(N_EU0/scale), 'EU')],
+                r=[0, r_EU*scale],
+                infoFields='migrate_to',
+                ops=sim.Migrator(rate=[
+                    [0, m_AF_EU],
+                    [m_AF_EU, 0]
+                    ])
+                ),
+            ], ops=ops, infoFields=infoFields
+        )
+
+
+class _Pipeline:
+    def __init__(self, VARS={'seed': 10086, 'null_input': None}, verbosity=1):
+        self.VARS = VARS
+        self.verbosity = verbosity
+
+def setup(project):
+    try:
+        subprocess.call(['touch', env.vst_bypass])
+        if not (os.path.isfile(project + '.proj') and os.path.isfile(project + '.log')): 
+            subprocess.call(['vtools', 'init', project, '-f', '--build', 'hg19'])
+            subprocess.call(['vtools', 'use', env.refgene])
+            # subprocess.call(['vtools', 'use', env.ccdsgene])
+    except OSError as e:
+        sys.exit(e)
+
+def main(args):
+    pipelineObj = _Pipeline(VARS={'seed':args.seed if args.seed != -1 else random.randint(0, 100000000),
+                                  'null_input':None}, verbosity=args.verbosity)
+    setup(args.project)
+    init_file = os.path.join(env.cache, args.project) + '.init.pop' 
+    burnin_file = os.path.join(env.cache, args.project) + '.burnin.pop' 
+    evolve_file = os.path.join(env.cache, args.project) + '.evolve.pop' 
+    mutator = RefGenomeMutator(regions=args.regions, model='K80', rate=[1.8e-8 * args.scale, 2])
+    transmitter =FineScaleRecombinator(regions=args.regions, scale=args.scale)
+    selector=ProteinSelector(regions=args.regions, s_missense=0.0001 * args.scale,
+                             s_stoploss=0.0001 * args.scale, s_stopgain=0.001 * args.scale)
+    models = {'burnin': InstantChangeModel(T = args.numgenburnin // args.scale, N0 = args.ancestor_size // args.scale),
+              'European': European_Gazave2013Model(args.moreburnin + 620, scale=args.scale),
+              'African': African_Excoffier2013Model(args.moreburnin + 298, scale=args.scale)}
+    # create an empty simuPOP population for specified regions
+    popObj = CreatePopulation(
+        size=args.ancestor_size // args.scale,
+        regions=args.regions,
+        output=init_file,
+        #infoFields='ind_id'
+        )
+    popObj([env.vst_bypass], pipelineObj)
+    # evolve burn-in stage
+    burninObj = EvolvePopulation(output=burnin_file, mutator=mutator, transmitter=transmitter, selector = selector,
+                                 demoModel=models['burnin'])
+    burninObj([init_file], pipelineObj)
+    evolveObj = EvolvePopulation(output = evolve_file, mutator=mutator, transmitter=transmitter, selector = selector,
+                                 demoModel = models[args.model])
+    evolveObj([burnin_file], pipelineObj)
+    # export simulated population to SFS and GDATA files
+    pop = sim.loadPopulation(evolve_file)
+    sys.stderr.write('Writing SFS file ...\n')
+    mutants, sel, pos, vaf = saveMarkerInfoToFile(pop, args.output)
+    sys.stderr.write('Writing GDATA file ...\n')
+    saveVariantPool(pop, args.output, args.project, mutants, sel, pos, vaf)
+    # export statistics of evolved pop to text file
+    if args.stat:
+        pop = sim.loadPopulation(evolve_file)
+        popSize = pop.popSize()
+        outputObj = OutputPopulationStatistics(regions=args.regions, mut_count=[args.stat+'.stat', popSize], mode='succinct')
+        outputObj([evolve_file], pipelineObj)
+    return
+
+###
+# copied from spower-srv
+###
+
+def saveMarkerInfoToFile(pop, fileName, regInt = -9, replicate = 0, logger=None):
+    '''Save a map file with an additional column of allele frequency. The
+    population has to be in mutational space. This function assumes that
+    there is a variable selCoef in this population which contains selection
+    coefficients for all mutants.
+    '''
+    allCounts = [Counter() for x in range(pop.numChrom())]
+    prog = sim.utils.ProgressBar('Counting number of mutants for %s' % (('replicate %d' % replicate) if replicate != 0 else 'simulated data [%s]' % fileName), pop.popSize(), gui=False)
+    for ind in pop.individuals():
+        # there can be memory problem....
+        for ch in range(pop.numChrom()):
+            allCounts[ch].update(ind.genotype(0, ch))
+            allCounts[ch].update(ind.genotype(1, ch))
+        prog.update()
+    allMutants = []
+    selCoefficient = pop.dvars().selCoef
+    outFile = open(fileName+'.sfs', 'a')
+    # write gene length to *.sfs file
+    print >> outFile, '# Replicate #%d gene length = %d' % (replicate, regInt)
+    sel, pos, vaf = [],[],[]
+    # write maf, sel and pos info into *.sfs file
+    for ch,region in enumerate(pop.chromNames()):
+        # real chromosome number
+        chName = region.split(':')[0][3:]
+        counts = allCounts[ch]
+        # get markers
+        mutants = counts.keys()
+        mutants.sort()
+        # allele 0 is fake
+        if mutants[0] == 0:
+            mutants = mutants[1:]
+        allMutants.append(mutants)
+        # write to file
+        sz = pop.popSize() * 2.
+        for idx2, marker in enumerate(mutants):
+            # vaf - variant allele frequency
+            vaf_marker = counts[marker] / sz
+            print >> outFile, ' '.join([('R'+str(replicate)) if replicate>0 else fileName, '%.8f' % (vaf_marker if vaf_marker <= 0.5 else 1-vaf_marker), '%d' % marker, '%.8f' % selCoefficient[marker][0]])
+            sel.append(round(selCoefficient[marker][0], 8))
+            pos.append(int(marker))
+            vaf.append(round(vaf_marker, 8))
+    outFile.close()    
+    return allMutants, sel, pos, vaf
+
+def saveVariantPool(pop, fileName, pool_name, allMutants, sel, pos, vaf, logger = None):
+    '''save to SEQPower's GDATA format'''
+    # marker index...
+    markerPos = []
+    for mutants in allMutants:
+        pos_tmp = {}
+        for idx,m in enumerate(mutants):
+            pos_tmp[m] = idx
+        markerPos.append(pos_tmp)
+    #
+    prog = sim.utils.ProgressBar('Writing genotype of %d individuals to %s.gdat' % (pop.popSize(), fileName), pop.popSize(), gui=False)
+    genos = []
+    for cnt, ind in enumerate(pop.individuals()):
+        hap1, hap2 = [], []
+        for ch in range(pop.numChrom()):
+            # a blank genotype
+            hap_tmp = [0]*len(markerPos[ch])
+            # add 1 according to mutant location (first ploidy)
+            for m in ind.genotype(0, ch):
+                if m == 0:
+                    break
+                hap_tmp[markerPos[ch][m]] = 1
+            hap1.extend(hap_tmp)
+            hap_tmp = [0]*len(markerPos[ch])
+            # add 1 according to mutant location (second ploidy)
+            for m in ind.genotype(1, ch):
+                if m == 0:
+                    break
+                hap_tmp[markerPos[ch][m]] = 1
+            hap2.extend(hap_tmp)
+        # flip 0<->1 based on variant allele frequency
+        hapsArray = np.array([hap1, hap2], dtype = np.int8)
+        for idx, f in enumerate(vaf):
+            if f > 0.5:
+                for i,x in enumerate(hapsArray[:,idx]):
+                    if x == 0:
+                        hapsArray[i, idx] = 1
+                    elif x == 1:
+                        hapsArray[i, idx] = 0
+                    else:
+                        continue
+        genos.append(sparse.csr_matrix(hapsArray))
+        prog.update()
+    obj = GData(data={'haplotype': sparse.vstack(genos), 'maf':[x if x < 0.5 else 1 - x for x in vaf],
+                      'annotation':sel, 'position':pos},
+                      name=pool_name,
+                      msg=' '.join(sys.argv))
+    obj.sink(fileName + '.gdat')
+
+###
+# end of copy
+###
+  
+
+def parserArguments(parser):
+    parser.add_argument('project', help = 'Name of variant tool project.')
+    p_m = parser.add_argument_group('Simulation model options')
+    p_m.add_argument('-m', '--model',
+                        type=str,
+                        choices=['European', 'African'],
+                        required=True,
+                        help='''Specify which demographic model to use, where European - European_Gazave2013Model, African - African_Excoffier2013Model''')
+    p_m.add_argument('--regions',
+                        metavar = 'name',
+                        default='refGene_exon.name2:PCSK9',
+                        help='''Specify a genomic region, either genomic range(s) (e.g. 'chr21:33031597-33041570') or gene name(s)
+                        (e.g. 'ccdsGene_exon.name:CCDS12419.1,CCDS46035.1', 'refGene_exon.name:NM_174936', 'refGene_exon.name2:PCSK9,ABCA1')'''
+                        )
+    p_m.add_argument('--ancestor-pool',
+                        type=int,
+                        default=5000,
+                        metavar = 'size',
+                        dest = 'ancestor_size',
+                        help='''Specify number of ancestor genomes to evolve from''')
+    p_m.add_argument('--burnin',
+                        type=int,
+                        default=15000,
+                        metavar = 'generations',
+                        dest = 'numgenburnin',
+                        help='''Specify number of generations to burn-in for the ancestor pool''')
+    p_m.add_argument('--burnin-additional',
+                        type=int,
+                        default=10,
+                        dest='moreburnin',
+                        metavar = 'generations',
+                        help='''Specify number of additional burn-in generations for each specific evolution event under given demographic model''')
+    p_m.add_argument('--scale',
+                        type=int,
+                        metavar = 'N',
+                        default=1,
+                        help='''Specify a scalar to speed up evolutionary simulation''')
+    p_io = parser.add_argument_group('File I/O options')
+    p_io.add_argument('--output',
+                        default='output',
+                        metavar='FILE',
+                        help='''Specify a file name to output evolved population in gdat format''')
+    p_io.add_argument('--stat',
+                        metavar='FILE',
+                        help='''If specified, statistical info of evolved population will be saved''')
+    p_runtime = parser.add_argument_group('Runtime options')
+    p_runtime.add_argument('--seed',
+                        type=int,
+                        default=10086,
+                        help='''Specify a random number seed. If set to -1, a random number between 0 and 100000000 will be used''')
+    p_runtime.add_argument('-v', '--verbosity',
+                        type=int,
+                        choices=[0,1,2],
+                        default=1,
+                        help='''Specify verbosity level for screen output''')
+    p_runtime.add_argument('--debug',
+                        default=False,
+                        action='store_true',
+                        help=argparse.SUPPRESS)
+    
+if __name__ == '__main__':
+    master_parser = argparse.ArgumentParser(
+        description = '''Simulation of European and African populations using VST''',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        prog = 'spower-vst',
+    )
+    parserArguments(master_parser)
+    master_parser.set_defaults(func=main)
+    args = master_parser.parse_args()
+    if args.debug:
+        args.func(args)
+    else:
+        try:
+            args.func(args)
+        except Exception as e:
+            sys.exit('An ERROR has occured: {}'.format(e))
+    sys.exit()

@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+# $File: spower $
+# $LastChangedDate:  $
+# $Rev:  $
+# This file is part of the SPower program
+# Copyright (c) 2012, Gao Wang <ewanggao@gmail.com>
+# GNU General Public License (http://www.gnu.org/licenses/gpl.html)
+
+if __name__ == '__main__':
+    from spower.opts import CalculatorOpt
+    o = CalculatorOpt()
+    o.run()
