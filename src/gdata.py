@@ -15,6 +15,7 @@ from scipy import sparse
 import tables as tb
 import re
 import gzip
+import os
 
 class GData(dict):
     def __init__(self, data, name, msg = None, gtype = 'haplotype', close = True):
@@ -242,6 +243,18 @@ class SFSFile:
                     loci_input[header[idx+1]].append(item)
         fobj.close()
         return data, group
+
+def gfile_to_sfs(gfile, limit = -1):
+    cnt = 0
+    f = GFile(os.path.expanduser(gfile))
+    for item in f.getnames():
+        dat = f.getdata(item)
+        for x, y, z in zip(dat['maf'], dat['position'], dat['annotation']):
+            print ('{}\t{}\t{}\t{}'.format(item, x, y, z))
+        cnt += 1
+        if cnt > limit and limit > 0:
+            break
+    f.close()
 
 if __name__ == '__main__':
     # dat = {'haplotype':[1,0,0,0,1], 'variant':[2,3,4,5,6], 'info':['1','2','3','4','5']}
