@@ -657,7 +657,10 @@ class Executor:
 
     def run(self):
         if self.data_buffer is not None and self.option == 0:
-            self.logger('[WARNING] Loading all genotypes to memory. May fail if there is not enough memory!')
+            if self.args.resampling:
+                self.logger('[WARNING] Loading all genotype data to memory. May fail if there is not enough memory!')
+            else:
+                self.logger('Converting data attributes ...')
         try:
             if self.option == 1:
                 self.__scan_sfs()
@@ -700,7 +703,7 @@ class Executor:
             if self.args.resampling:
                 data.decompress()
             else:
-                data[item] = [[]]
+                data['haplotype'] = [[]]
             try:
                 loci_input = {'pool':data['haplotype'], 'name':item,
                               'maf':list(data[maf]), 'pos':list(data[pos]),
