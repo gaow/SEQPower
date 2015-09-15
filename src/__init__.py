@@ -6,8 +6,8 @@
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 from subprocess import check_output
 import os, sys
-VERSION = '1.1.0-rev94'
-FULL_VERSION = '1.1.0, revision 94'
+VERSION = '1.1.0-rev100'
+FULL_VERSION = '1.1.0, revision 100'
 
 from contextlib import contextmanager
 @contextmanager

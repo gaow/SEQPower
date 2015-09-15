@@ -17,10 +17,11 @@ import re
 import gzip
 
 class GData(dict):
-    def __init__(self, data, name, msg = None, gtype = 'haplotype'):
+    def __init__(self, data, name, msg = None, gtype = 'haplotype', close = True):
         self.__group = re.sub(r'[^a-zA-Z0-9_]', '_', name)
         self.__msg = msg
         self.__genotype_name = gtype
+        self.__close = close
         self[self.__genotype_name] = [[]]
         try:
             if type(data) is dict:
@@ -85,7 +86,8 @@ class GData(dict):
                     continue
             else:
                 self[element.name] = element[:]
-        fstream.close()
+        if self.__close:
+            fstream.close()
 
     def __compress(self, item):
         return sparse.csr_matrix(np.array(item, dtype=np.int8))
@@ -155,7 +157,7 @@ class GFile:
             return [node._v_name for node in self.file.root]
 
     def getdata(self, name):
-        return GData(self.file, name)
+        return GData(self.file, name, close = False)
 
 class SFSFile:
     def __init__(self, fn):
