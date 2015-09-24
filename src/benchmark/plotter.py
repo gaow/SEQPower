@@ -6,16 +6,16 @@
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 import os,sys
 try:
-    import apsw
-    apsw_support = True
+    import sqlite3
+    sqlite3_support = True
 except:
-    apsw_support = False
+    sqlite3_support = False
 from spower.utils import whereisRPackage, runCommand
 
 class Plotter:
     def __init__(self, opts):
-        if not apsw_support:
-            raise RuntimeError('Cannot plot without apsw support!')
+        if not sqlite3_support:
+            raise RuntimeError('Cannot plot without sqlite3 support!')
         self.db = opts['db'] + ".SEQPowerDB" if not (opts['db'].endswith(".SEQPowerDB") or opts['db'].endswith(".sqlite3")) else opts['db']
         if opts['plot_fn']:
             self.pdf = opts['plot_fn'].replace(' ', '.') + '.pdf'
@@ -24,7 +24,7 @@ class Plotter:
         self.opts = opts
         if not os.path.isfile(self.db):
             raise ValueError("Cannot find {}".format(self.db))
-        self.cur = apsw.Connection(self.db).cursor()
+        self.cur = sqlite3.Connection(self.db).cursor()
         for item in ['x_axis', 'y_axis', 'model', 'object', 'stderr']:
             try:
                 assert self.opts[item]
