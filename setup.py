@@ -1,7 +1,7 @@
 # $File: setup.py $
 # $LastChangedDate:  $
 # $Rev:  $
-# Copyright (c) 2012, Gao Wang <ewanggao@gmail.com>
+# Copyright (c) 2014, Gao Wang <ewanggao@gmail.com>
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 import sys, os, subprocess
 from src import quiet 
