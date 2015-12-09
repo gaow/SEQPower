@@ -244,6 +244,9 @@ class Generator1(CalculatorAlgorithm):
         # generate case/ctrl samples using different underlying MAF 
         # cases
         sample.set(maf=data["case_maf"])
+        if data['verbosity'] > 3:
+            env.logger.debug("Minor Allele Frequency in cases:")
+            env.logger.debug(sample.get("maf"))
         for i in range(data['ncases']):
            pop.append("trait", AFFECTED)
            L.GenotypeGenerator(0).apply(sample.data)
@@ -253,6 +256,9 @@ class Generator1(CalculatorAlgorithm):
                pop.append("GT", sample.get("genotype"))
         # ctrls
         sample.set(maf=data["ctrl_maf"])
+        if data['verbosity'] > 3:
+            env.logger.debug("Minor Allele Frequency in ctrls:")
+            env.logger.debug(sample.get("maf"))
         for i in range(data['nctrls']):
            pop.append("trait", UNAFFECTED)
            L.GenotypeGenerator(0).apply(sample.data)
