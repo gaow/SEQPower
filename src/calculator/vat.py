@@ -2,7 +2,7 @@
 # $LastChangedDate:  $
 # $Rev:  $
 # This file is part of the SPower program
-# Copyright (c) 2012, Gao Wang <ewanggao@gmail.com>
+# Copyright (c) 2012, Gao Wang <gaow@uchicago.edu>
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 import sys, os, re
 import time

@@ -2,7 +2,7 @@
 # $File: __init__.py $
 # $LastChangedDate:  $
 # $Rev:  $
-# Copyright (c) 2012, Gao Wang <ewanggao@gmail.com>
+# Copyright (c) 2012, Gao Wang <gaow@uchicago.edu>
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 from subprocess import check_output
 import os, sys

@@ -1,10 +1,10 @@
 # $File: setup.py $
 # $LastChangedDate:  $
 # $Rev:  $
-# Copyright (c) 2014, Gao Wang <ewanggao@gmail.com>
+# Copyright (c) 2014, Gao Wang <gaow@uchicago.edu>
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 import sys, os, subprocess
-from src import quiet 
+from src import quiet
 
 # Check python environment
 if not 'conda' in sys.version:
@@ -15,7 +15,7 @@ from src import VERSION
 main_version = VERSION.split('-')[0]
 revision = subprocess.check_output('cat src/.revision', shell = True).strip()
 version = '{}-rev{}'.format(main_version, revision)
-full_version = '{}, revision {}'.format(main_version, revision) 
+full_version = '{}, revision {}'.format(main_version, revision)
 content = []
 with open('{}/__init__.py'.format("src"), 'r') as init_file:
     for x in init_file.readlines():
@@ -34,7 +34,7 @@ try:
         __import__('simuPOP')
 except ImportError:
     sys.stderr.write("Installing simuPOP library ...\n")
-    p = subprocess.Popen(['conda', 'install', '-c', 'https://conda.binstar.org/simupop', 'simuPOP'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)    
+    p = subprocess.Popen(['conda', 'install', '-c', 'https://conda.binstar.org/simupop', 'simuPOP'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate(input=b'y')
 
 # Compile cstatgen library
@@ -165,7 +165,7 @@ if sys.platform == 'linux2':
 else:
     libs = []
     gccargs = ["-std=c++11"]
-  
+
 if sys.platform == "win32":
    SIMULATOR_MODULE = []
 else:
@@ -186,9 +186,9 @@ setup(name = "SEQPower",
     description = "SEQPower provides statistical power analysis for sequence-based association studies",
     author = 'Gao Wang',
     url = 'http://bioinformatics.org/spower',
-    author_email = 'gaow@bcm.edu',
+    author_email = 'gaow@uchicago.edu',
     maintainer = 'Gao Wang',
-    maintainer_email = 'gaow@bcm.edu',
+    maintainer_email = 'gaow@uchicago.edu',
     packages = ['spower', 'spower.simulator', 'spower.calculator', 'spower.benchmark', 'spower.progressbar', 'spower.vat'],
     scripts = [
         'src/spower',
