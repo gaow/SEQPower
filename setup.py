@@ -4,12 +4,9 @@
 # Copyright (c) 2014, Gao Wang <gaow@uchicago.edu>
 # GNU General Public License (http://www.gnu.org/licenses/gpl.html)
 import sys, os, subprocess
+if not sys.version_info[0] == 2:
+    sys.exit("Python 3 is not supported!")
 from src import quiet
-
-# Check python environment
-if not 'conda' in sys.version:
-    sys.exit("Anaconda Python environment is required. Please download and install Anaconda (http://continuum.io/downloads)")
-
 # Update version
 from src import VERSION
 main_version = VERSION.split('-')[0]
@@ -27,15 +24,6 @@ with open('{}/__init__.py'.format("src"), 'r') as init_file:
             content.append(x.rstrip())
 with open('{}/__init__.py'.format("src"), 'w') as init_file:
     init_file.write('\n'.join(content))
-
-# Install simuPOP
-try:
-    with quiet():
-        __import__('simuPOP')
-except ImportError:
-    sys.stderr.write("Installing simuPOP library ...\n")
-    p = subprocess.Popen(['conda', 'install', '-c', 'https://conda.binstar.org/simupop', 'simuPOP'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-    p.communicate(input=b'y')
 
 # Compile cstatgen library
 try:
@@ -64,11 +52,7 @@ except ImportError:
     os.system("{} > /dev/null".format(cmd))
     os.chdir(cwd)
 #
-from distutils.core import setup, Extension
-try:
-   from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-   from distutils.command.build_py import build_py
+from setuptools import setup, Extension
 import multiprocessing, multiprocessing.pool
 
 def compile_parallel(
@@ -111,11 +95,7 @@ except:
 SWIG_SIMULATOR_OPTS = ['-c++', '-python', '-O', '-shadow', '-keyword',
                        '-w-511', '-w-509', '-outdir', 'src/simulator']
 
-if sys.version_info.major == 2:
-    PYVERSION = 'py2'
-else:
-    SWIG_SIMULATOR_OPTS.append('-py3')
-    PYVERSION = 'py3'
+PYVERSION = 'py2'
 #
 WRAPPER_SIMULATOR_CPP = 'src/simulator/loci_wrap_{0}.cpp'.format(PYVERSION)
 WRAPPER_SIMULATOR_PY = 'src/simulator/loci_{0}.py'.format(PYVERSION)
@@ -166,10 +146,7 @@ else:
     libs = []
     gccargs = ["-std=c++11"]
 
-if sys.platform == "win32":
-   SIMULATOR_MODULE = []
-else:
-   SIMULATOR_MODULE = [
+SIMULATOR_MODULE = [
         Extension('spower.simulator._loci',
             sources = [
                 WRAPPER_SIMULATOR_CPP,
@@ -195,8 +172,9 @@ setup(name = "SEQPower",
         'src/spower-srv'
         # 'src/spower-vst'
     ],
-    cmdclass = {'build_py': build_py },
     package_dir = {'spower': 'src'},
     # package_data = {'spower': ['data/genes.pkl']},
-    ext_modules = SIMULATOR_MODULE
+    ext_modules = SIMULATOR_MODULE,
+    install_requires = ['simuPOP', 'tables', 'pysqlite', 'pandas',
+                        'statsmodels', 'numexpr', 'scipy', 'numpy']
 )
