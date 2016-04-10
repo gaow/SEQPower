@@ -32,7 +32,7 @@ except ImportError:
     from src.utils import downloadURL
     from distutils.dir_util import remove_tree
     import tempfile
-    cstatgen_url = "{}/uploads/cstatgen.tar.gz".format('http://bioinformatics.org/seqlink')
+    cstatgen_url = "http://bioinformatics.org/spower/download/.private/cstatgen.tar.gz"
     download_dir = tempfile.gettempdir()
     pkg = os.path.join(download_dir, "cstatgen.tar.gz")
     pkg_dir = os.path.join(download_dir, "cstatgen")

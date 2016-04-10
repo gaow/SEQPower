@@ -34,11 +34,11 @@ def printinfo(*objs):
 
 class RuntimeEnv:
     def __init__(self):
-        self.association_timeout = 3650 * 24 * 3600 # 10 years ... 
+        self.association_timeout = 3650 * 24 * 3600 # 10 years ...
         self.logger = None
         self.temp_dir = tempfile.gettempdir()
         self.cache_dir = os.path.join(self.temp_dir, "cache")
-        self.search_path = 'http://bioinformatics.org/spower/upload'
+        self.search_path = 'http://bioinformatics.org/spower/download/.private'
         self.skat_version = '0.93'
         try:
             os.mkdir(self.cache_dir)
@@ -71,7 +71,7 @@ def openFile(filename):
         # text file
         # because readline() from gzip.open will be byte, not string, we should return
         # binary here in order to process them equally in order for things to work
-        # correctly under python 3 
+        # correctly under python 3
         return open(filename, 'rb')
 
 import urlparse, subprocess
@@ -118,7 +118,7 @@ def downloadURL(URL, dest, quiet, message=None):
     except (RuntimeError, ValueError, OSError):
         # no wget command
         pass
-    
+
     # use python urllib?
     try:
         urllib.URLopener().open(URL)
@@ -144,10 +144,10 @@ def downloadFile(fileToGet, dest_dir = None, quiet = False):
     else:
         pass
     #
-    # if a complete URL is given, local file is something like 
+    # if a complete URL is given, local file is something like
     #
     # ~/.variant_tools/ftp.completegenomics.com/refgenome/build36.crr
-    # 
+    #
     # unless a specific dest_dir is given
     #
     if '://' in fileToGet:
@@ -160,7 +160,7 @@ def downloadFile(fileToGet, dest_dir = None, quiet = False):
         else:
             dest_dir = os.path.join(env.local_resource, os.path.split(local_fileToGet)[0])
             dest = os.path.join(env.local_resource, local_fileToGet)
-    # 
+    #
     # otherwise, local file is like
     #
     # ~/.variant_tools/format/vcf.fmt
@@ -177,11 +177,11 @@ def downloadFile(fileToGet, dest_dir = None, quiet = False):
     #
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir)
-    # 
+    #
     # if dest already exists, return it directly
     if os.path.isfile(dest):
         return dest
-    # 
+    #
     # if a URL is given, try that URL first
     if '://' in fileToGet:
         try:
@@ -378,7 +378,7 @@ def strictly_le(A, B):
                 raise AssertionError("{0} is greater than {1}".format(x,y))
     else:
         assert A<=B
-        
+
 def strictly_ge(A, B):
     if isinstance(A, list):
         for x, y in zip(A, B) or isinstance(A, tuple):

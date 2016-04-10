@@ -6,35 +6,25 @@
 ###
 #[{{icons:download.png?64}}|@http://bioinformatics.org/spower/404@]
 # Starting from version 1.1.0, binary release for Linux and MacOS are no longer supported. Instead we release Docker image for SEQPower which can be executed on both Linux and MacOS.
-# To run SEQPower with docker ...
+# To run SEQPower with docker ... ""[to be updated!]""
+###
+# Supporting data
+###
+# Supporting data as well as older versions of the software can be downloaded [here|@http://bioinformatics.org/spower/download/@].
 ###
 # Install from source
 ###
 #! Source code download
 #[{{icons:download.png?64}}|@http://bioinformatics.org/spower/ccount/click.php?id=1@]
 #! Dependencies
-# To successfully compile the program from source you need to have on your OS @@gcc@@ (version 4.7+) [@@swig@@|@http://swig.org@] and [@@anaconda@@|@http://continuum.io/downloads@] installed.
+# To successfully compile the program from source you need to have on your OS @@gcc@@ (version 4.9+) [@@swig@@|@http://swig.org@] and [@@anaconda@@|@http://continuum.io/downloads@] installed.
 #!! Dependency packages installation on Debian Linux
-# Below are commands for installing dependency packages on Debian 7.0. It may also hold for Ubuntu based Linux.
-apt-get install gcc g++ build-essential libbz2-dev swig
-# Then download and install [Anaconda | @http://continuum.io/downloads@] scientific Python distribution.
-#!! Dependency packages installation on Mac OS
-#{list
-# Install [Xcode | @https://developer.apple.com/downloads/index.action@], choose ""Preferences"" from Xcode menu and install ""Command Line Tools""
-# Download and install [MacPorts | @http://www.macports.org/install.php@]
-# Use MacPorts to install gcc (v4.7+) and enable gcc4.7+ as system default gcc compiler, e.g. run
-#}
-sudo port install gcc48
-sudo port select --set gcc mp-gcc48
-#{list
-# Use MacPorts to install swig and swig-python
-#}
-sudo port install swig swig-python
+# Below are commands for installing dependency packages on Debian 8.0. It may also hold for Ubuntu based Linux.
+sudo apt-get install gcc g++ build-essential libbz2-dev swig
 # Then download and install [Anaconda | @http://continuum.io/downloads@] scientific Python distribution.
 #! Compile from source
-# On Linux or Mac OS with @@bash@@ terminal, type
-sudo python setup.py install
-# If you do not have root privilege you can run a local installation by
+python setup.py install
+# If the command above failed because it requires root privilege, you should instead run a local installation by
 #{list
 # Specifying @@lib@@ and @@bin@@ directories
 # Modify the system environment variable to include these directores

@@ -2,7 +2,7 @@
 #! Forward-time simulation with SRV
 ###
 
-# The original @@srv@@ simulator was authored by [Bo Peng, 2011 | @DOI://10.1159/000323316@] ([download|@http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/SimuRareVariants@]). SEQPower expands the @@srv@@ simulator to allow for additional demographic models and specification of selection coefficients. It also saves generated data in a compressed format compatible with SEQPower's power calculation input.
+# The original @@srv@@ simulator was authored by [Bo Peng, 2011 | @DOI://10.1159/000323316@] ([download|@http://simupop.sourceforge.net/Cookbook/SimuRareVariants@]). SEQPower expands the @@srv@@ simulator to allow for additional demographic models and specification of selection coefficients. It also saves generated data in a compressed format compatible with SEQPower's power calculation input.
 
 #{note
 # This feature is available only in the ``Full'' version of SEQPower.
