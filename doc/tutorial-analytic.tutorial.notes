@@ -1,0 +1,81 @@
+###
+#! Analytic power analysis
+###
+###
+# Analytic power and sample size calculation for case control studies
+###
+#! LOGIT model
+#!! Basic example 
+# To calculate power at given sample size assuming equal case control samples (1000 cases, 1000 controls), at an effect size of odds ratio equals 2 for rare variants, 1 for common variants, evaluated at {$\(\alpha=0.05\)$}:
+spower LOGIT KIT.gdat -a 2 --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+
+# To calculate sample size assuming equal case control samples given 80% power and using the same setup as above:
+spower LOGIT KIT.gdat -a 2 --power 0.8 --alpha 0.05 -v2 -o K1AS
+
+# To view results
+spower show K1AP.csv power*
+spower show K1AS.csv sample_size*
+#!! Adjust effect size
+# A variable effect model below will assign to rare variants odds ratio {$\(\in(1,3)\)$} depending on the MAF of rare variants:
+spower LOGIT KIT.gdat -a 1 -A 3 --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+# Adding effects for common variants, fixed to odds ratio 1.2: 
+spower LOGIT KIT.gdat -a 1 -A 3 -c 1.2 --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+spower LOGIT KIT.gdat -a 1 -A 3 -c 1.2 --power 0.8 --alpha 0.05 -v2 -o K1AS
+#!! Adjust variant properties and analysis filters
+# Now based on the basic example, we change definition for rare variants to MAF > 5%:
+spower LOGIT KIT.gdat -a 2 --def_rare 0.05 --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+# Power of the test boosts significantly, although it is not a reasonable setup to apply aggregated rare variant analysis to high frequency variants like in this example. There is usually adequate power to detect common variants association when analyzed individually.
+#!! Set a random proportion of non-causal variants
+# It is often the case that not all functional rare variants are directly causal to the phenotype. To add such non-causal ``noise'' to data and evaluate the impact on power / sample size, we can set a random set of 50% variants to be non-causal (@@-P@@ option) and be included in analysis. Since the assignment of non-causal variant is random, the final estimate should be based on the average of multiple replicates, for example 100 replicates:
+spower LOGIT KIT.gdat -a 2 --def_valid_locus 3 1000 --sample_size 2000 --alpha 0.05 -P 0.5 -r 100 -v2 -o K1APP 
+spower LOGIT KIT.gdat -a 2 --def_valid_locus 3 1000 --power 0.8 --alpha 0.05 -P 0.5 -r 100 -v2 -o K1APS
+spower show K1APP.csv power power_std
+# Note that standard deviation for the 100 replicates is also calculated and can be displayed.
+#! PAR model
+#!! Basic example
+# To calculate power at given sample size assuming equal case control samples (1000 cases, 1000 controls), at an effect size of PAR equals 5% for rare variants, 1% for common variants, evaluated at {$\(\alpha=0.05\)$}:
+spower PAR KIT.gdat -a 0.05 -c 0.01 --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+# To calculate sample size assuming equal case control samples given 80% power and using the same setup as above:
+spower PAR KIT.gdat -a 0.05 -c 0.01 --power 0.8 --alpha 0.05 -v2 -o K1AS
+# To view results
+spower show K1AP.csv power*
+spower show K1AS.csv sample_size*
+#!! Adjust effect size
+# A variable effect model below will assign site specific PAR to deleterious rare variants depending on the MAF of rare variants:
+spower PAR KIT.gdat -a 0.05 --PAR_variable --sample_size 2000 --alpha 0.05 -v2 -o K1AP
+spower PAR KIT.gdat -a 0.05 --PAR_variable --power 0.8 --alpha 0.05 -v2 -o K1AS
+#!! Set a random proportion of non-causal variants
+# The use of @@-P@@ and @@-r@@ options to model the effect of non-causal variants was previously introduced in logit model. The same idea applies to PAR model. See section above for details. 
+###
+# Analytic power and sample size calculation for quantitative traits analysis
+###
+#! Linear QT mean shift model
+#!! Basic example
+# To calculate power at given sample size for randomly ascertained QT samples of 2000 unrelated individuals, at an effect size of [{$\(0.25\sigma\)$}|@http://bioinformatics.org/spower/simtraits#quantitative_traits@], evaluated at {$\(\alpha=0.05\)$}:
+spower LNR KIT.gdat -a 0.25 --sample_size 2000 --alpha 0.05 -v2 -o K1AP # power 0.22
+# To calculate sample size assuming equal case control samples given 80% power and using the same setup as above:
+spower LNR KIT.gdat -a 0.25 --power 0.8 --alpha 0.05 -v2 -o K1AS # sample size 10806
+
+#!! Adjust effect size
+# A variable effect model below will assign to rare variants mean shift {$\(\in(0.1, 0.5)\)$} depending on the MAF of rare variants:
+spower LNR KIT.gdat -a 0.1 -A 0.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP # 0.289
+# Adding effects for common variants, fixed mean shift to 0.15:
+spower LNR KIT.gdat -a 0.1 -A 0.5 -c 0.15 --sample_size 2000 --alpha 0.05 -v2 -o K1AP # 0.86
+spower LNR KIT.gdat -a 0.1 -A 0.5 -c 0.15 --power 0.8 --alpha 0.05 -v2 -o K1AS # 1966
+#!! Adjust variant properties and analysis filters
+# Now based on the basic example, we change definition for rare variants to MAF > 5%:
+spower LNR KIT.gdat -a 0.25 --def_rare 0.05 --sample_size 2000 --alpha 0.05 -v2 -o K1AP # 0.946
+# Power of the test boosts significantly, although it is not a reasonable setup to apply aggregated rare variant analysis to high frequency variants like in this example. There is usually adequate power to detect common variants association when analyzed individually.
+
+#!! Set a random proportion of non-causal variants
+# For example we set a random set of 50% variants that would not contribute to the quantitative phenotype, but will be included in analysis as noise and as a result larger sample size is required to achieve the same power. Since each time a random proportion of variants are considered non-causal, the final estimate should be based on average of multiple replicates, for example 100 replicates:
+spower LNR KIT.gdat -a 0.5 --def_valid_locus 3 1000 --sample_size 20000 --alpha 0.05 -P 0.5 -r 100 -v2 -o K1APP --jobs 8 # power 0.8632
+spower LNR KIT.gdat -a 0.5 --def_valid_locus 3 1000 --power 0.8 --alpha 0.05 -P 0.5 -r 100 -v2 -o K1APS --jobs 8 # sample size 17420.4501268
+spower show K1APP.csv power*
+spower show K1APS.csv *size*
+# Note that standard deviation for the 100 replicates is also calculated and can be displayed with wildcard symbol ``*'' in @@spower show@@ command.
+
+#{------
+#! Graphic summary for exome-wide power analysis
+# Example [input data|@http://tigerwang.org/uploads/spower-results.tar.gz@] and [output graph|@http://tigerwang.org/uploads/EA.OR2power80.result.pdf@]
+#}-------

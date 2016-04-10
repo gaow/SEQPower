@@ -1,0 +1,33 @@
+###
+#! Empirical Power Analysis
+###
+###
+# Power calculations
+###
+# For many association methods for rare variants, it is not possible to perform theoretical power analysis, since the statistical properties for these methods are mathematically intractable. A variety of such tests have been developed over the past few years. Compare with simple tests with close form solution for power and sample size, these methods are usually more powerful. Performance of these tests, particularly statistical power, have to be assessed empirically. The idea of empirical power calculation is to:
+#{list
+# Repeatedly simulate association data under fixed parameter settings
+# Analyze the simulated data using given association tests, compare the resulting p-value to given significant level {$\(\alpha\)$} to determine success (in rejecting the null hypothesis) or failure
+# Compute the success rate over multiple replicates
+#}
+# For most rare variant association tests, it is problematic to rely on asymptotic distributions for computation of p-values, due to the sparsity of data. Permutation procedures are often used to obtain p-values. Permutation tests for association are often carried out as follows:
+#{list
+# Analyze data using given test and record the resulting statistic {$\(T_0\)$}
+# Shuffle the phenotype values, or genotypes, for the data set such that genotype and phenotype no long match. This is to create data without association between genotype and phenotype
+# Analyze permuted data using the same test and record the resulting statistic {$\(T_1\)$}
+# Shuffle again the data, and analyze, record the resulting statistic. Do this for many times and obtain permutation test statistics {$\(\{T_1, \ldots, T_N\}\)$}. The number of permutations required is determined by the required statistical significance level {$\(\alpha\)$} to achieve. {$\(N\)$} has to be at least large enough to satisfy {$\(\alpha \ge \frac{1}{N}\)$}
+# Empirical p-value is calculated as {$\(\frac{S}{N}\)$} (or {$\(\frac{S+1}{N+1}\)$}) where {$\(S\)$} is the number of permutation tests with a ``more extreme'' (larger or smaller, depending on the null hypothesis) observed test statistic {$\(T_i\)$} than {$\(T_0\)$}
+#}
+#! Example
+# [Empirical power calculation|@http://bioinformatics.org/spower/empirical-tutorial@].
+###
+# Sample size calculations
+###
+# For empirical power calculations it is not straightforward to obtain sample size estimates. It is however possible to create a search procedure to find the approximate sample size required to achieve given power. Knowing that the heuristic power function is monotonically increasing with respect to sample size, one could
+#{list
+# Start by specifying a small number of replicates and an arbitrary sample size
+# Up or down adjusted based on whether the resulting power is higher or lower than desired power, say, 80%, and calculate again
+# Repeat the above step until desired power is roughly achieved, then use more replicates to fine-estimate sample size for required power
+#}
+#! Example
+# [Empirical sample size calculation|@http://bioinformatics.org/spower/empirical-tutorial@].

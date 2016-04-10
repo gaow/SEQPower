@@ -1,0 +1,32 @@
+###
+#! Power for quantitative traits
+###
+###
+# Model
+###
+# The key to power and sample size calculation for quantitative traits is on the comparison of quantitative trait values between groups. Consider a two-sample {$\(t\)$} test framework with unequal sample size, where one group of sample consists of "wildtype (wt)" haplotype, and the other group "none-wildtype (nwt)" haplotypes. The probability of falling into the "nwt" group is {$\[Pr(G=2) = 1 - \prod_i^M(1-p_i)\]$} The shift of the mean of quantitative trait value, {$\(\delta\)$}, under our current modeling, is the expected effect size of the "nwt" group, which I calculate numerically using the algorithm described below:
+#! INPUT
+#{list
+# A multi-site genotype having {$\(M\)$} sites, each associated with a MAF {$\(p_i\)$} and an effect size {$\(\lambda_i\)$}
+#}
+#! ITERATION
+# For each out of the total {$\(Q\)$} possible subset of locus combination
+#{list
+# Calculate the probability of observing such particular genotype combination {$\(Q_i\)$}: {$\(q_i=\prod_{i\in observed}p_i \prod_{j\in unobserved}(1-p_j)\)$}
+# Calculate the conditional probability {$\(Pr(Q_i|G=2) = \frac{q_i}{Pr(G=2)}\)$}
+# Calculate the effect size for this particular combination {$\(\gamma_i = \sum_{i\in observed}\lambda_i\)$}
+#}
+#! OUTPUT
+#{list
+# The expectation is given by {$\(\delta = \sum_i^Q \gamma_i Pr(Q_i|G=2)\)$}
+#}
+#! Low-order approximation
+# The method described above is exact, but can be very slow for long genomic regions due to the huge number of possible subset of locus combination. A low-order approximation is used in this program to only consider a maximum of up to 2 or 3 loci in a genotype combination, ignoring the contributions from all other high order possibilities. For genes having variant sites smaller than 8, 3 order approximation is applied; for larger genes 2 order approximation is applied. {$\(Pr(Q_i|G=2)\)$} will be adjusted accordingly such that they still sum up to {$\(1\)$}.
+###
+# Power and sample size calculation
+###
+# Power and sample size estimations can be performed under a two-sample {$\(t\)$} test framework {$\[z_\beta = \frac{|\delta|}{\sqrt{\frac{1}{mp}+\frac{1}{m(1-p)}}}+z_{\alpha/2}\]$} Notice that ``samples'' in this setting means ""haplotypes"" and the final sample size should be {$\[N_{samples} = \frac{N_{haplotypes}}{2}\]$}
+###
+# Example
+###
+# Please find more details in [this tutorial|@http://bioinformatics.org/spower/analytic-tutorial@] on analytic power calculation for quantitative traits.

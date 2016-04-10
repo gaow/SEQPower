@@ -1,0 +1,40 @@
+###
+#! Tutorial
+###
+###
+# Quick Start
+###
+#{list
+# A [short tutorial|@http://bioinformatics.org/spower/quickstart@] demonstrating major features of SEQPower
+#}
+###
+# Data Simulation
+###
+#{----
+#{list
+# [Forward time simulation|@http://bioinformatics.org/spower/srvbatch-tutorial@]
+# [Effect sizes|@http://bioinformatics.org/spower/404@] of variants
+# Variants [functionality|@http://bioinformatics.org/spower/404@]
+# Sequencing / genotyping [artifact|@http://bioinformatics.org/spower/artifact@]
+#}
+#}----
+#{list
+# [Forward time simulation|@http://bioinformatics.org/spower/srvbatch-tutorial@] of DNA sequences with rare variants
+# Sequencing / genotyping [artifact|@http://bioinformatics.org/spower/artifact@]
+#}
+
+###
+# Power and Sample Size Calculation for Population Based Study Designs
+###
+#{list
+# [Analytic|@http://bioinformatics.org/spower/analytic-tutorial@] power analysis for case control and quantitative phenotype rare variant burden test
+# [Empirical|@http://bioinformatics.org/spower/empirical-tutorial@] power analysis for case control phenotype rare variant burden test
+#}
+#{----
+###
+# Miscellaneous
+###
+#{list
+# Power analysis for exome chip data
+#}
+#}----

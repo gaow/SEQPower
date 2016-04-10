@@ -1,0 +1,89 @@
+###
+#! Write simulation data set to files
+###
+# The @@GroupWrite@@ method can be used to save simulation data sets to separate files for purposes beyond the scope of SEQPower. See below for more details:
+spower show test GroupWrite
+# It will create 3 files for each group:
+#{list
+# A phenotype file with rows representing samples, the 1st column is sample name, the 2nd column is the quantitative or binary phenotype;
+# A genotype file with rows representing variants and the columns represent sample genotypes (order of the rows matches the genotype file); 
+## By default output are tab separated with each column being genotypes on two haplotypes; phase information is retained in the data, i.e., `10' and `01' are different phases
+## With @@--recode@@ switch on, coding of genotypes are converted to minor allele counts (0/1/2). Missing values are denoted as "NA"
+# A mapping file that matches the group ID and variant ID in pairs.
+#}
+# If multiple replicates are specified, as the example below, the output dataset will be named with replicate ID as part of file name suffix.
+###
+# Example
+###
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 -P 0.8 --alpha 0.05 -v2 \
+       --method "GroupWrite SimData" \
+       -r 50 -j8
+# This command will result in files @@*_geno.txt@@, @@*_pheno.txt@@ and @@*_mapping.txt@@ recording simulated genotype, phenotype and variant map data.
+#{text KIT_geno.txt
+KIT:55524145	00	00	00	00	00	00	00	00	00
+KIT:55524161	00	00	00	00	00	00	00	00	00
+KIT:55561658	00	00	00	00	00	00	00	00	00
+KIT:55561805	00	00	00	00	00	00	00	00	00
+KIT:55561861	00	00	00	00	00	00	00	00	00
+KIT:55564614	00	00	00	00	00	00	00	00	00
+KIT:55564616	00	00	00	00	00	00	00	00	00
+KIT:55570043	00	00	00	00	00	00	00	00	00
+KIT:55570067	00	00	00	00	00	00	00	00	00
+KIT:55589871	00	00	00	00	00	00	00	00	00
+KIT:55592059	00	00	00	00	00	00	00	00	00
+KIT:55592061	00	00	00	00	00	00	00	00	00
+KIT:55593551	00	00	00	00	00	00	00	00	00
+KIT:55593560	00	00	00	00	00	00	00	00	00
+KIT:55593608	00	00	00	00	00	00	00	00	00
+KIT:55598029	00	00	00	00	00	00	00	00	00
+KIT:55598065	00	00	00	00	00	00	00	00	00
+...
+#}
+#{text KIT_pheno.txt
+SAMP1	1
+SAMP2	1
+SAMP3	1
+SAMP4	1
+...
+SAMP1997	0
+SAMP1998	0
+SAMP1999	0
+SAMP2000	0
+#}
+#{text KIT_mapping.txt
+KIT	KIT:55524145
+KIT	KIT:55524161
+KIT	KIT:55561658
+KIT	KIT:55561805
+KIT	KIT:55561861
+KIT	KIT:55564614
+KIT	KIT:55564616
+KIT	KIT:55570043
+KIT	KIT:55592061
+...
+#}
+#! Recode genotypes
+# With the @@--recode@@ switch genotypes are recoded to minor allele counts:
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 -P 0.8 --alpha 0.05 -v2 \
+       --method "GroupWrite SimData --recode" \
+       -r 50 -j8
+#{text KIT_geno.txt
+KIT:55524145	0	0	0	0	0	0	0	0	0
+KIT:55524161	0	0	0	0	0	0	0	0	0
+KIT:55561658	0	0	0	0	0	0	0	0	0
+KIT:55561805	0	0	0	0	0	0	0	0	0
+KIT:55561861	0	0	0	0	0	0	0	0	0
+KIT:55564614	0	0	0	0	0	0	0	0	0
+KIT:55564616	0	0	0	0	0	0	0	0	0
+KIT:55570043	0	0	0	0	0	0	0	0	0
+KIT:55570067	0	0	0	0	0	0	0	0	0
+KIT:55589871	0	0	0	0	0	0	0	0	0
+KIT:55592059	0	0	0	0	0	0	0	0	0
+KIT:55592061	0	0	0	0	0	0	0	0	0
+KIT:55593551	0	0	0	0	0	0	0	0	0
+KIT:55593560	0	0	0	0	0	0	0	0	0
+KIT:55593608	0	0	0	0	0	0	0	0	0
+KIT:55598029	0	0	0	0	0	0	0	0	0
+KIT:55598065	0	0	0	0	0	0	0	0	0
+...
+#}

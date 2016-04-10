@@ -1,0 +1,3 @@
+src/simulator/loci_py2.py
+src/simulator/loci_wrap_py2.cpp
+src/swigpyrun.h

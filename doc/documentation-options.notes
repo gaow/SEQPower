@@ -1,0 +1,118 @@
+###
+#! Command interface
+###
+# This page documents command options shared by all simulation settings and association methods with explanations. For a complete table of program options please check [here|@http://bioinformatics.org/spower/allargs@]. For model or association test specific option please refer to [their respective documentation pages|@http://bioinformatics.org/spower/docs@].
+#
+###
+# Simulation options
+###
+#! Simulation of DNA Sequence
+# Please refer to documentation page of [@@spower simulate@@|@http://bioinformatics.org/spower/srvbatch@]
+#! Variant functionality options
+#!! --def_rare
+# Definition of rare variants. The input is a MAF cutoff. Variant having MAF smaller than this cutoff is defined as a ``rare'' variant. Other variants will be defined ``common''. In SEQPower common variants and rare variants are modeled differently for effect size and direction of effect.
+#{note
+# Definition of such cutoff is arbitrary. Commonly accepted definition of rare variant is "MAF<0.01" (1%).
+#}
+#!! --def_neutral
+# Definition of neutral variants. This option takes in two values: the lower and upper bound for some ``function score''. The variants will then be annotated such that variants having annotation score greater than the lower bound yet smaller than the upper bound will be defined ``neutral''. Neutral variants will not be taken into consideration when phenotypes are simulated. Neutral variants can also be removed from actual power analysis, as people would normally do in real world applications (annotate rare variants and only focus on functional ones).
+# No default value is set for this option, meaning that by default all variants are considered functional.
+#{note
+# The range of this parameter depends on the nature of annotation information being used. For our simulated data from @@spower simulate@@ we can define neutral variants as those having purifying selection coefficient {$\(-10^{-4}<S<10^{-4}\)$}.
+#}
+#!! --def_protective
+# Definition of protective variants. Same as @@--def_neutral@@ this option takes in two values that define a ``protective'' variant. Such variants will be assigned a ``protective effect'' (odds ratio less than 1, negative PAR or QT mean shift) in phenotype simulations. For simulated data from @@spower simulate@@ we define protective variants as those having purifying selection coefficient {$\(S<-10^{-4}\)$}.
+# No default value is set for this option.
+#!! --proportion_detrimental / -P
+# This is definition for ``non-causal'' variants among all deleterious variants. Deleterious variants are functional, but we assume only part of them will contribute to the disease phenotype (detrimental). With this option on, we can define {$\(p\times 100\%\)$} out of all deleterious variants to be directly effecting the phenotype. The rest of variants will not be taken into consideration in simulation of phenotype, but will be included in association analysis since in practice there is no knowledge on these variants that could justify the removal of them. Such variants are noise in data and will result in decreased power.
+# No default value is set for this option.
+#{note
+# The impact of non-causal variants is very substantial on reduction of power. Generally in the presence of non-causal variants the relative power will be higher for methods robust to noises, e.g., WSS and VT. We recommend setting a range of percentage of non-causal variants from 20% to 100% to obtain both conserved and optimistic estimate on power and sample size estimate.
+#}
+#!! --proportion_associated_protective / -Q
+# This is definition for ``non-causal'' variants among all protective variants. No default value is set for this option.
+#! Quality control options
+# Options below removes variant sites on the basis of locus attributes.
+#!! --def_valid_locus
+# This option takes in two integer values of variant counts in a locus, one is the upper bound and one the lower bound. If a locus has variant counts smaller than the lower bound or larger than the upper bound, the locus will be discarded in power analysis. This is analogous to the real world analysis when we discard genes having too few variant sites for rare variant analysis.
+# No default value is set for this option.
+#{note
+# In power calculation, the number of replicates based on which empirical power is computed excludes ``invalid replicates'', i.e., replicates having two few number of variants than this specified threshold. We usually specify this parameter to exclude association units having less than 3 variants.
+#}
+#!! --rare_only
+# This option removes from analysis all common variant sites defined by @@--def_rare@@. This accesses the performance ``oracle'' tests when the chosen MAF cutoff for analysis is exactly the ``underlying'' MAF cutoff for rare variant related disease etiology. For such situations tests with a fixed threshold usually out-performs tests with variable thresholds such as VT and RareCover. It is also possible to input user specified MAF range based on observed data to determine which variants will be excluded from analysis due to having too small or large MAF (see @@--method@@ option).
+#!! --missing_as_wt
+# Fill missing genotype calls as wildtype genotypes. This option might be required for some methods to work, but can create bias in many scenarios. In SEQPower the association methods all have build-in mechanisms to handle missing data, thus this option is generally not necessary unless one wants to specifically evaluate the bias created by such behavior.
+#! Sequencing / genotyping artifact
+# Options below introduces missing variant calls on the basis of specified simulated data properties.
+#!! --missing_low_maf
+# Variants having underlying population ""MAF from SFS data"" smaller than specified value are set to missing. This option is particularly designed for [exome chip power analysis|@http://bioinformatics.org/spower/404@]. No default value is set for this option.
+#{note
+# For exome chip design this cut-off is set to be 0.00025 (3/12,000)
+#}
+#!! --missing_sites (--missing_sites_[type])
+# This option defines a proportion of randomly missing variant sites, creating a situation of exclusion of causal variants. In practice it is possible that causal variants are missing due to the sequencing / genotyping procedures, or quality control measures applied before association analysis. No default value is set for this option.
+#!! --missing_calls (--missing_calls_[type])
+# This option defines a proportion of randomly missing genotype calls at each variant site. Missing calls do not eliminate the entire variant sites but the missing data it creates will either be treated as wildtype or be imputed via mean dosage, resulting in decrease power. No default value is set for this option.
+#!! --error_calls (--error_calls_[type])
+# This option defines a random proportion of genotyping errors among all genotype calls. An error is created by replacing a wildtype genotype with a mutant heterozygous genotype, or replacing a non-wildtype genotype into wildtype. No default value is set for this option.
+###
+# Analysis options
+###
+#! Power calculation
+#!! --sample_size & --power
+# Specify required sample size or power. These options are mutually exclusive and for empirical power analysis @@--sample_size@@ must be provided to calculate the power estimate.
+#{note
+# In practice for sample size calculations we usually specify a power of 80%
+#}
+#!! --replicates
+# Number of replicates required for empirical power calculation. Default value is 1.
+#{note
+# It is recommended to set number of replicates larger than 1,000, if computational resource permits.
+#}
+#!! --alpha
+# Significance level at which power will be evaluated. Default value is 0.05. For an exome-wide association scan of 20,000 genes, the significance level after Bonferroni correction is 2.5E-6.
+#!! --methods
+# Method of association tests for empirical power calculation or saving simulated data. Please use @@spower show tests@@ and @@spower show test TEST@@ to read details on methods.
+#!! --discard_samples & --discard_variants
+# These are gene group specific quality control filters applied on the fly as the analysis are being carried out for each replicate. Samples or sites having too much missing data (defined by these options) will be removed from analysis.
+#! Other options
+#!! --delimiter
+# A character specifying delimiter of input data, default to white space
+#!! --output
+# Specify output csv file name. Default output file name uses the same prefix as the input data file name.
+#!! --verbosity
+# verbosity levels
+#{list
+# 0 for absolutely quiet
+# 1 for less verbose
+# 2 for verbose
+# 3 for more debug information
+#}
+# Default level is set to 2.
+#!! --seed
+# An integer setting the seed for random number generator. Use 0 for random seed.
+#!! --jobs
+# Number of CPUs to use for parallel analysis when multiple replicates are required via @@-r/--replicates@@ option. Default is set to 2.
+
+###
+# Association Options
+###
+#! Analysis options
+#!! --name
+# This is the tag for the name of association test, useful when multiple association methods are evaluated or the same association method with different parameter settings. In such situations each test can be assigned a unique name which will be appended to the result of analysis, and can be viewed via @@spower show *.csv NAME@@.
+#!! -q1/-q2
+# The lower and upper limit of MAF to be analyzed. For most tests the default values are set to 0 and 0.01, which is typically used for analyzing rare variants data. For common variant analysis the lower and upper limits needs to be adjusted.
+#{note
+# You should consider adjust these values, if a @@--def_rare@@ parameter value different than 0.01 is set.
+#}
+#! Permutation test options
+#!! -p
+# Number of permutations.
+#!! --adaptive
+# Adaptive permutation using Edwin Wilson 95 percent confidence interval for binomial distribution. The program will compute a p-value every 1000 permutations and compare the lower bound of the 95 percent CI of p-value against "C", and quit permutations with the p-value if it is larger than "C". It is recommended to specify a "C" that is slightly larger than the significance level for the study. To disable the adaptive procedure, set C=1. Default is C=0.1
+#{note
+# The choice of this parameter depends on the alpha level in test. We recommend setting it at least twice the alpha value.
+#}
+#! Other options
+# Besides the common options listed above, each association test may have specific options. Use @@spower show test TST@@ (replace @@TST@@ with the name of test you want to read) to view these options.

@@ -1,0 +1,23 @@
+###
+#! Power for case control studies
+###
+###
+# Cumulative minor allele frequency in cases and controls
+###
+# To compare the difference between cases/ctrls for cumulative MAF of all variants across a gene analytically, the case/ctrl group specific MAF have to be calculated given the MAF in population and effect size of variant sites. Consider a multi-site genotype having {$\(M\)$} sites, each with a MAF (population MAF) and an odds ratio associated with the site. It is then possible to calculate the corresponding MAF in "case" group under Bayesian arguments. Specifically {$\(Pr(genotype)\)$} is a function of MAF ({$\(p_{AA}=q^2, p_{aa} = (1-q)^2, p_{Aa} = 2q(1-q)\)$} under Hardy-Weinberg Equilibrium assumptions), {$\(Pr(status|genotype)\)$} is genotype penetrance, {$\(Pr(status)\)$} is prevalence; {$\(Pr(genotype|status)\)$} can thus be calculated and can be translated into MAF in cases {$\[Pr(g|s)=\frac{Pr(g)Pr(s|g)}{Pr(s)}\]$} and cumulative MAF {$\[p_s = 1 - \prod^M_i(1-p_{is})\]$}
+# It is also possible to evaluate power and sample size for common variant analysis (e.g., in GWAS) using SEQPower. This is just a special scenario of {$\(M=1\)$} and the cumulative MAF is the locus MAF.
+###
+# Analytic power for comparing difference in cumulative MAF
+###
+# Power and sample size can be evaluated using a test for binomial proportions as described by [Fleiss et al|@DOI://10.2307/2529990@] {$\[z_\beta=\frac{\sqrt{\Delta p^2rm^*-(r+1)\Delta p}-z_\alpha\sqrt{(r+1)\bar{p}\bar{q}}}{\sqrt{rp_{s1}q_{s1}+p_{s2}q_{s2}}}\]$}
+# Sample size can be obtained via inverting the equation above. Please refer to Fless et al. 1980 for notations for the power function. 
+
+# Other statistical tests can also be applied, e.g, [Casagrande et al|@DOI://10.2307/2530613@]. [Power of different analytic tests yet to be discussed].
+#{----
+# It is also possible to use non-central {$\(\chi^2\)$} distribution (see @@src/calculator/stats.py@@) for power but haven't yet figure out how to do that for sample size.
+#}----
+
+###
+# Example 
+###
+# Please find more details in [this tutorial|@http://bioinformatics.org/spower/analytic-tutorial@] on analytic power calculation for case control data. 

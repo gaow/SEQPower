@@ -1,0 +1,45 @@
+###
+#! Simulate rare variants data
+###
+# This tutorial covers simulation for DNA sequence data under
+#{list
+# Demographic models based on Scott H. Williamson 2005 NIEHS SNPs data and Adam Eyre-Walker 2006 Environmental Genome Project (EGP) data
+## num. haplotypes = 51,340 x 2 = 102,680
+# Boyko 2008 European demographic model
+## num. haplotypes = 52,907 x 2 = 105,940
+# Boyko 2008 African demographic model
+## num. haplotypes = 25,636 x 2 = 51,272
+# Kryukov 2009 European demographic model
+## num. haplotypes = 90,000 x 2 = 180,000
+#}
+# Proportion of synonymous and proportion of protective variants can be customized. Note that specification of selection coefficients have to be adjusted accordingly. Other common parameters are set as follows for all commands in this tutorial:
+lenI=1800 # would like 1800, 5000, 10000
+lenII=1800
+fn="1800"
+reps=200
+# Boyko 2008 European population model, 37% synonymous variants:
+spower simulate --regRange=[$lenI,$lenII] --fileName="Boyko2008European$fn" --numReps=$reps --N=[7947,7947,262,7019,7019,52907,52907] --G=[5000,84,1,5217,1,576] --mutationModel='finite_sites' --mu=1.8e-08 --selModel='multiplicative' --selDist='Boyko_2008_European' --steps=[100] --verbose=0 --revertFixedSites=False > Boyko2008European$fn.log
+
+# Boyko 2008 African population model, 37% synonymous variants:
+spower simulate --regRange=[$lenI,$lenII] --fileName="Boyko2008African$fn" --numReps=$reps --N=[7778,7778,25636,25636] --G=[5000,1,6809] --mutationModel='finite_sites' --mu=1.8e-08 --selModel='multiplicative' --selDist='Boyko_2008_African' --steps=[100] --verbose=0 --revertFixedSites=False > Boyko2008African$fn.log
+
+# Scott H. Williamson 2005 NIEHS SNPs data and Adam Eyre-Walker 2006 Environmental Genome Project (EGP) data:
+spower simulate --regRange=[$lenI,$lenII] --fileName="Eyre2006Williamson$fn" --numReps=$reps --N=[8211,8211,51340,51340] --G=[5000,1,908] --mutationModel='finite_sites' --mu=1.8e-08 --selModel='multiplicative' --selDist='Eyre-Walker_2006' --steps=[100] --verbose=0 --revertFixedSites=False > Eyre2006Williamson$fn.log
+
+# Kryukov 2009 European population model, 37% synonymous variants:
+spower simulate --regRange=[$lenI,$lenII] --fileName="Kryukov2009European$fn" --numReps=$reps --N=[8100,8100,7900,900000] --G=[5000,10,370] --mutationModel='finite_sites' --mu=1.8e-08 --selModel='multiplicative' --selDist='Kyrukov_2009_European' --steps=[100] --verbose=0 --revertFixedSites=False > Kryukov2009European$fn.log
+
+# Different proportions of protective and detrimental variants, 20% protective, 43% deleterious and 37% non-synonymous:
+spower simulate --regRange=[$lenI,$lenII] --fileName="Kryukov2009EuropeanProtective$fn" --numReps=$reps --N=[8100,8100,7900,900000] --G=[5000,10,370] --mutationModel='finite_sites' --mu=1.8e-08 --selModel='multiplicative' --selDist='mixed_gamma' --selCoef=[0.37,0.0,0.43,0.184,0.320,0.184,0.320,0.5] --steps=[100] --verbose=0 --revertFixedSites=False > Kryukov2009EuropeanProtective$fn.log
+# The resulting default output are @@*.sfs@@ and @@*.gdat@@ files in the input format compatible with SEQPower power analysis commands.
+#{----
+#Email from Kryukov
+#
+#theta = 0.01
+#k = 0.562341
+#
+#But remember it is not pure gamma distributions:
+#1) tails (above s=0.1 and below s=0.00001) have been chopped of
+#2) two additional bins (s=0 and s=1) added instead
+#3) and gamma function digitized by integration within the bin ranges.
+#}----

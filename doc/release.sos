@@ -1,0 +1,71 @@
+#!/usr/bin/env sos-runner
+#fileformat=SOS1.0
+
+# This script will compile and publish wiki pages to SEQPower website <br>
+# Publish all pages: <br>
+# ./release.sos
+# Publish given pages:
+# ./release.sos --pages a.notes b.notes
+
+from glob import glob
+[parameters]
+pages = sorted(glob("*.notes"))
+
+[default_1: alias = 'tigernotes']
+# Generate pages
+input: pages, group_by = 'single',
+    pattern = '{type}-{name}.{ext}'
+output: [x.replace('.', '-', 1) if x.count('.') > 1 else x for x in expand_pattern('{_name}.txt')]
+run:
+if [[ ${_input!r} == "about-start.notes" ]]; then
+    tigernotes dokuwiki ${_input} -o ${_output} --lite --showall
+else
+    tigernotes dokuwiki ${_input} -o ${_output} --lite --showall --compact_toc
+fi
+echo ${_type} "::" `grep -v '~' ${_output} | head -1 | sed 's/=//g'` "::" ${_output} > sidebar.${_output}
+
+[default_2: alias = 'sidebar']
+output: 'sidebar.txt'
+python:
+from glob import glob
+res = {}
+for name in glob('sidebar.*.txt'):
+    with open(name) as f:
+        x, y, z = f.read().split('::')
+        if x.strip() not in res:
+            res[x.strip()] = []
+        res[x.strip()].append((y.strip(), z.strip()[:-4]))
+text = ''
+for k in sorted(res.keys()):
+    start_page = [x[1] for x in res[k] if x[0].lower() == k.lower()][0]
+    text += '#{{list\n# ""[{}|@{}@]""\n'.format(k.capitalize(), start_page)
+    for item in sorted(res[k]):
+        if item[0].lower() == k.lower():
+            continue
+        text += "## [{}|@{}@]\n".format(item[0], item[1])
+    text += '#}\n'
+with open('/tmp/sidebar.notes', 'w') as f:
+    f.write(text)
+
+run:
+    tigernotes dokuwiki /tmp/sidebar.notes -o sidebar.txt --compact_toc
+
+[default_3]
+# Upload pages
+input: tigernotes.output, sidebar.output
+output: []
+run:
+  scp ${input} ${CONFIG.spower_wiki_data}/pages/
+
+[default_4]
+# Upload images
+input: glob('*.png')
+output: []
+run:
+  scp ${input} ${CONFIG.spower_wiki_data}/media/
+
+# [default_5]
+# # Clean up
+# input: tigernotes.output, sidebar.output
+# run:
+#   rm ${input}

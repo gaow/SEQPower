@@ -1,0 +1,71 @@
+###
+#! SEQPower benchmark
+###
+# @@spower execute@@ command executes a given configuration file with parameters set to allow for power analysis under multiple scenarios within a single command. The feature also provides us a shortcut to benchmark performance of different rare variant association methods under various parameter settings.
+
+###
+# Prepare a configuration file
+###
+#{text spower-benchmark.conf
+file:///../vignettes/template.conf
+#}
+###
+# Usage
+###
+spower execute -h
+#{out
+usage: spower execute [-h] [-s [ARG [ARG ...]]] [-f [ARG [ARG ...]]] [--plot]
+                      [--dry_run]
+                      file
+
+positional arguments:
+  file                  configuration filename to execute
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s [ARG [ARG ...]], --sliding [ARG [ARG ...]]
+                        specify variable parameters
+  -f [ARG [ARG ...]], --fixed [ARG [ARG ...]]
+                        specify fixed parameters
+  --plot                generate plot instead of running simulations
+  --dry_run             print generated commands to screen instead of
+                        executing them
+#}
+#! Execute benchmark
+spower execute spower-benchmark.conf --sliding sample_size=2000,3000,4000,5000,6000 \
+       --fixed model=LOGIT input=KIT.gdat p1=0.5
+#{out
+Running command 1/5 ...
+INFO: Loading data from [KIT.gdat] ...
+INFO: 1 units found
+KIT : 100% |======================================================================================| Time: 0:03:06
+INFO: Tuning [PowerBenchmark.SEQPowerDB] ...
+INFO: Result saved to [PowerBenchmark.csv/.loci.csv/.SEQPowerDB]
+Running command 2/5 ...
+INFO: Loading data from [KIT.gdat] ...
+INFO: 1 units found
+KIT : 100% |======================================================================================| Time: 0:05:08
+INFO: Tuning [PowerBenchmark.SEQPowerDB] ...
+INFO: Result saved to [PowerBenchmark.csv/.loci.csv/.SEQPowerDB]
+Running command 3/5 ...
+INFO: Loading data from [KIT.gdat] ...
+INFO: 1 units found
+KIT : 100% |======================================================================================| Time: 0:07:32
+INFO: Tuning [PowerBenchmark.SEQPowerDB] ...
+INFO: Result saved to [PowerBenchmark.csv/.loci.csv/.SEQPowerDB]
+Running command 4/5 ...
+INFO: Loading data from [KIT.gdat] ...
+INFO: 1 units found
+KIT : 100% |======================================================================================| Time: 0:10:06
+INFO: Tuning [PowerBenchmark.SEQPowerDB] ...
+INFO: Result saved to [PowerBenchmark.csv/.loci.csv/.SEQPowerDB]
+Running command 5/5 ...
+INFO: Loading data from [KIT.gdat] ...
+INFO: 1 units found
+KIT : 100% |======================================================================================| Time: 0:14:09
+INFO: Tuning [PowerBenchmark.SEQPowerDB] ...
+INFO: Result saved to [PowerBenchmark.csv/.loci.csv/.SEQPowerDB]
+#}
+#! Generate plot
+spower execute spower-benchmark.conf --plot
+#* plot-example.png 500

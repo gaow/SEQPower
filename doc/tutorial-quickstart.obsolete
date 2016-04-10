@@ -1,0 +1,98 @@
+###
+#! Quick Start Guide
+###
+# This 5 minutes tutorial on SEQPower provides a minimal demonstration showing analysis under basic power calculation settings so that you can get a feel for the program and access its usefulness. Please read the [documentation|@http://bioinformatics.org/spower/doc@] or other [tutorials|@http://bioinformatics.org/spower/tutorial@] for advanced features on simulation models, study designs, sequencing and power analysis scenarios as well as various rare variants association methods.
+
+###
+# Getting started
+###
+#! Obtain the program and data
+# The [package|@http://bioinformatics.org/spower/installation@] and [data|@http://bioinformatics.org/spower/input@] are available for download from this website. After you download the program, on Linux platform:
+chmod +x SEQPower-<version>.bundle
+./SEQPower-<version>.bundle
+# To verify installation, type
+spower -h
+# In this quick start guide we will be using the "KIT" gene data from 1000 genomes project:
+wget http://bioinformatics.org/spower/download/data/KIT.gdat
+#! Help
+# A SEQPower command is composed of
+#{list
+# Model specific simulation options for variant / phenotype associations
+# Information on samples collected
+# Sequencing and genotyping artifact
+# Options for rare variants association tests (applicable for empirical power analysis)
+#}
+# Most parameters have default values. It is important to read the help message and understand these options and default values, so that they can be adjusted to best model a specific real world study design.
+# To view general help information (a list of available power analysis models):
+spower -h
+# View information on specific model:
+spower <model ID> -h
+# For example
+spower LOGIT -h
+spower PAR -h
+# View available rare variants association tests methods for empirical power and sample size calculations:
+spower show tests
+# View options for a specific association test:
+spower show test <name of test>
+# For example,
+spower show test SKAT
+###
+# Power calculation and sample size estimation examples
+###
+#! Power calculations for case control study
+# To calculate power at 1000 cases vs. 1000 controls, at an effect size of odds ratio equals 2 for rare variants evaluated at {$\(\alpha=0.05\)$}, and view the result:
+spower LOGIT KIT.gdat -a 2 --sample_size 2000 --alpha 0.05 -v2 -o KIT
+spower show KIT.csv power
+#! Sample size calculations for case control study
+# To calculate sample size assuming equal case control samples given 80% power and using the same setup as above:
+spower LOGIT KIT.gdat -a 2 --power 0.8 --alpha 0.05 -v2 -o KIT
+spower show KIT.csv sample_size 
+#! Power calculations for quantitative trait analysis
+# To calculate power for 2000 randomly sampled individuals from population, at an effect size of {$\(0.25\sigma\)$} for rare variants evaluated at {$\(\alpha=0.05\)$}:
+spower LNR KIT.gdat -a 0.25 --sample_size 2000 --alpha 0.05 -v2 -o KIT
+spower show KIT.csv power
+#! Sample size calculations for quantitative trait analysis
+# To calculate sample size given 80% power and using the same setup as above:
+spower LNR KIT.gdat -a 0.25 --power 0.8 --alpha 0.05 -v2 -o KIT
+spower show KIT.csv size
+#! Empirical power calculation using real data haplotype pools
+# @@KIT.gdat@@ contains a pool of ~2000 haplotypes of the 1000 genomes samples. To directly sample from the pool and calculate empirical power:
+spower LOGIT KIT.gdat --resampling -a 2 --sample_size 500 --alpha 0.05 -v2 -o KIT \
+       --method CFisher -r 200 --jobs 8
+spower show KIT.csv power
+#! Empirical power comparisons for different rare variant methods
+# Several association methods can be applied to the same simulated data sets in one command, for power comparison purposes. For example,
+spower LOGIT KIT.gdat -a 1.5 --sample_size 3000 --alpha 0.05 -v2 -o KIT \
+               --method "CFisher" \
+               "Calpha --permutations 1000" \
+               "BurdenBt" \
+               "KBAC --permutations 1000" \
+               "WSSRankTest --permutations 1000" \
+               "VTtest --permutations 1000" \
+               -r 200 -j8
+
+###
+# Browsing power analysis results
+###
+#! Text files
+# Power analysis results are stored as text files. To view available information in a text file, for example @@KIT.csv@@
+spower show KIT.csv
+# To extract particular fields, 
+spower show KIT.csv method power
+#! SEQPower Database
+# To examine a range of parameter settings and store the results from multiple SEQPower commands, it is convenience to create SEQPower database and use simple sqlite queries to read the result. For example to evaluate power at a range of effect sizes from 1.2 to 3, in Linux Bash terminal:
+lambda="1.2 1.4 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0"
+for i in $lambda; do
+spower LOGIT KIT.gdat -a $i --sample_size 1500 --alpha 0.05 -v2 -o KIT$i
+done
+# To evaluate scenarios with power greater than 0.6, for example, with simple SQL queries:
+spower show KIT.SEQPowerDB LOGIT title method power --condition "where power > 0.6"
+#{out
+#title, method, power
+KIT, default, 0.860770688555
+KIT, default, 0.8
+KIT, WSSRankTest, 0.725
+KIT, CFisher, 0.705
+KIT, KBAC, 0.65
+KIT, BBt, 0.72
+#}

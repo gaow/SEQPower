@@ -1,0 +1,90 @@
+###
+#! Documentation
+###
+
+###
+# Data Input and output
+###
+#{list
+# SEQPower [input|@http://bioinformatics.org/spower/input@] data
+# SEQPower simulation of [association data|@http://bioinformatics.org/spower/write@]
+# SEQPower power analysis [results|@http://bioinformatics.org/spower/output@]
+# [Graphic representation|@http://bioinformatics.org/spower/benchmark#usage@] of power calculation results
+#}
+
+###
+# Complete list of command options
+###
+# [Argument list|@http://bioinformatics.org/spower/allargs@]
+###
+# Guide to command usage
+###
+#! Common options
+#{list
+# Genotype simulation options
+# Phenotype simulation options
+# Analysis options
+# Association tests options
+# {$<$}color blue{$>$}Read more{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/options@]
+#}
+#! Model specific options
+#{list
+# [LOGIT|@http://bioinformatics.org/spower/mlogit@] model
+# [PAR|@http://bioinformatics.org/spower/mpar@] model
+# [LNR|@http://bioinformatics.org/spower/mlnr@] model
+# [ELNR|@http://bioinformatics.org/spower/melnr@] model
+# [BLNR|@http://bioinformatics.org/spower/mblnr@] model
+#}
+
+###
+# Genetic sequences
+###
+#{list
+# Population genetics model based simulation
+## @@spower simulate@@ command for forward time simulation of DNA sequences
+# Data based simulation
+# Direct sampling from real world data-set
+# {$<$}color blue{$>$}Read more{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/simseq@]
+#}
+###
+# Disease associations
+###
+#! Effects of variants
+#{list
+# Fixed effect vs. variable effects
+# Protective, deleterious and neutral variants
+# {$<$}color blue{$>$}Read more{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/simtraits@]
+#}
+#! Phenotype simulations
+#{list
+# Linear mean-shift model
+# Extreme quantitative trait model
+# Logit model of odds ratios
+# Population attributable risk model
+# Linear model with qualitative outcome
+# Phenotype simulation for sequences drawn from haplotype pools
+# {$<$}color blue{$>$}Read more{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/simtraits@]
+#}
+###
+# Power of association tests
+###
+#{list
+# [Analytic power and sample size calculation for case control design|@http://bioinformatics.org/spower/cc@]
+# [Analytic power and sample size calculation for quantitative traits design|@http://bioinformatics.org/spower/qt@]
+# [Empirical power and sample size calculations|@http://bioinformatics.org/spower/empirical@]
+#}
+
+###
+# Rare variants association methods (RVAM)
+###
+#{list
+# [RVAM|@http://bioinformatics.org/spower/vat-methods@] catalog
+# [Power comparison for RVAM|@http://bioinformatics.org/spower/benchmark@]
+#}
+
+###
+# Evaluating novel statistical tests
+###
+#{list
+# Writing [R extensions|@http://bioinformatics.org/spower/vat-r@]
+#}

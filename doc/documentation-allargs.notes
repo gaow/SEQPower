@@ -1,0 +1,109 @@
+###
+#! Table of command options
+###
+#! Common options
+#{table
+Option  Default  Description
+%%--%%moi  A  mode of inheritance: 'A', additive
+%%--%%resampling  False  directly draw sample genotypes from given haplotype pools (sample genotypes will be simulated on the fly if haplotype pools are not avaliable)
+%%--%%def_rare  0.01  definition of rare variants: variant having 'MAF {$<$}= frequency' will be considered a 'rare' variant; the opposite set is considered 'common'
+%%--%%def_neutral  None  annotation value cut-offs that defines a variant to be 'neutral' (e.g. synonymous, non-coding etc. that will not contribute to any phenotype); any variant with 'function_score' X falling in this range will be considered neutral
+%%--%%def_protective  None  annotation value cut-offs that defines a variant to be 'protective' (i.e., decrease disease risk or decrease quantitative traits value); any variant with 'function_score' X falling in this range will be considered protective
+-P/%%--%%proportion_detrimental  None  proportion of deleterious variants associated with the trait of interest, i.e., the random set of the rest (1 - p) x 100% deleterious variants are non-causal: they do not contribute to the phenotype in simulations yet will present as noise in analysis
+-Q/%%--%%proportion_protective  None  proportion of protective variants associated with the trait of interest, i.e., the random set of the rest (1 - p) x 100% protective variants are non-causal: they do not contribute to the phenotype in simulations yet will present as noise in analysis
+%%--%%sample_size  None  total sample size
+%%--%%p1  None  proportion of affected individuals , or individuals with high extreme QT values sampled from infinite population (default set to None, meaning to sample from finite population speficied by %%--%%sample_size option).
+%%--%%def_valid_locus  None  upper and lower bounds of variant counts that defines if a locus is 'valid', i.e., locus having number of variants falling out of this range will be ignored from power calculation
+%%--%%rare_only  False  remove from analysis common variant sites in the population, i.e., those in the haplotype pool having MAF {$>$} $def_rare
+%%--%%missing_as_wt  False  label missing genotype calls as wildtype genotypes
+%%--%%missing_low_maf  None  variant sites having population MAF {$<$} P are set to missing
+%%--%%missing_sites  None  proportion of missing variant sites
+%%--%%missing_sites_deleterious  None  proportion of missing deleterious sites
+%%--%%missing_sites_protective  None  proportion of missing protective sites
+%%--%%missing_sites_neutral  None  proportion of missing neutral sites
+%%--%%missing_sites_synonymous  None  proportion of missing synonymous sites
+%%--%%missing_calls  None  proportion of missing genotype calls
+%%--%%missing_calls_deleterious  None  proportion of missing genotype calls at deleterious sites
+%%--%%missing_calls_protective  None  proportion of missing genotype calls at protective sites
+%%--%%missing_calls_neutral  None  proportion of missing genotype calls at neutral sites
+%%--%%missing_calls_synonymous  None  proportion of missing genotype calls at synonymous sites
+%%--%%error_calls  None  proportion of error genotype calls
+%%--%%error_calls_deleterious  None  proportion of error genotype calls at deleterious sites
+%%--%%error_calls_protective  None  proportion of error genotype calls at protective sites
+%%--%%error_calls_neutral  None  proportion of error genotype calls at neutral sites
+%%--%%error_calls_synonymous  None  proportion of error genotype calls at synonymous sites
+%%--%%power  None  power for which total sample size is calculated (this option is mutually exclusive with option '%%--%% sample_size')
+-r/%%--%%replicates  1  number of replicates for power evaluation
+%%--%%alpha  0.05  significance level at which power will be evaluated
+-l/%%--%%limit  None  if specified, will limit calculations to the first N groups in data .
+-o/%%--%%output  None  output filename
+-t/%%--%%title  None  unique identifier of a single command run
+-v/%%--%%verbosity  2  verbosity level: 0 for absolutely quiet, 1 for less verbose, 2 for verbose, 3 for more debug information
+-s/%%--%%seed  0  seed for random number generator, 0 for random seed
+-j/%%--%%jobs  2  number of CPUs to use when multiple replicates are required via '-r' option .
+-m/%%--%%methods  None  Method of one or more association tests. Parameters for each method should be specified together as a quoted long argument (e.g. %%--%%methods 'm %%--%%alternative 2' 'm1 %%--%%permute 1000'), although the common method parameters can be specified separately, as long as they do not conflict with command arguments. (e.g. %%--%%methods m1 m2 -p 1000 is equivalent to %%--%%methods 'm1 -p 1000' 'm2 -p 1000'.). You can use command 'spower show tests' for a list of association tests, and 'spower show test TST' for details about a test.
+%%--%%discard_samples  None  Discard samples that match specified conditions within each test group. Currently only expressions in the form of '%(NA){$>$}p' is provided to remove samples that have more 100*p percent of missing values.
+%%--%%discard_variants  None  Discard variant sites based on specified conditions within each test group. Currently only expressions in the form of '%(NA){$>$}p' is provided to remove variant sites that have more than 100*p percent of missing genotypes. Note that this filter will be applied after '%%--%%discard_samples' is applied, if the latter also is specified.
+#}
+
+#! LOGIT model options
+#{table
+Option  Default  Description
+-a/%%--%%OR_rare_detrimental  1.0  odds ratio for detrimental rare variants
+-b/%%--%%OR_rare_protective  1.0  odds ratio for protective rare variants
+-A/%%--%%ORmax_rare_detrimental  None  maximum odds ratio for detrimental rare variants, applicable to variable effects model
+-B/%%--%%ORmin_rare_protective  None  minimum odds ratio for protective rare variants, applicable to variable effects model
+-c/%%--%%OR_common_detrimental  1.0  odds ratio for detrimental common variants
+-d/%%--%%OR_common_protective  1.0  odds ratio for protective common variants
+-f/%%--%%baseline_effect  0.01  penetrance of wildtype genotypes
+#}
+
+#! PAR model options
+#{table
+Option  Default  Description
+-a/%%--%%PAR_rare_detrimental  0.0  Population attributable risk for detrimental rare variants
+-b/%%--%%PAR_rare_protective  0.0  Population attributable risk for protective rare variants
+-c/%%--%%PAR_common_detrimental  0.0  Population attributable risk for detrimental common variants
+-d/%%--%%PAR_common_protective  0.0  Population attributable risk for protective common variants
+%%--%%PAR_variable  False  use variable population attributable risks: the smaller the MAF the larger the PAR
+-f/%%--%%baseline_effect  0.01  penetrance of wildtype genotypes
+#}
+
+#! LNR model options
+#{table
+Option  Default  Description
+-a/%%--%%meanshift_rare_detrimental  0.0  mean shift in quantitative value w.r.t standard deviation due to detrimental rare variants i.e., by 'MULTIPLIER * sigma'
+-b/%%--%%meanshift_rare_protective  0.0  mean shift in quantitative value w.r.t. standard deviation due to protective rare variants i.e., by 'MULTIPLIER * sigma'
+-A/%%--%%meanshiftmax_rare_detrimental  None  maximum mean shift in quantitative value w.r.t standard deviation due to detrimental rare variants i.e., by 'MULTIPLIER * sigma', applicable to variable effects model
+-B/%%--%%meanshiftmax_rare_protective  None  maximum mean shift in quantitative value w.r.t standard deviation due to protective rare variants i.e., by 'MULTIPLIER * sigma', applicable to variable effects model
+-c/%%--%%meanshift_common_detrimental  0.0  mean shift in quantitative value w.r.t standard deviation due to detrimental common variants i.e., by 'MULTIPLIER * sigma'
+-d/%%--%%meanshift_common_protective  0.0  mean shift in quantitative value w.r.t standard deviation due to protective common variants i.e., by 'MULTIPLIER * sigma'
+#}
+
+#! BLNR & ELNR model options
+#{table
+Option  Default  Description
+-a/%%--%%meanshift_rare_detrimental  0.0  mean shift in quantitative value w.r.t standard deviation due to detrimental rare variants i.e., by 'MULTIPLIER * sigma'
+-b/%%--%%meanshift_rare_protective  0.0  mean shift in quantitative value w.r.t. standard deviation due to protective rare variants i.e., by 'MULTIPLIER * sigma'
+-A/%%--%%meanshiftmax_rare_detrimental  None  maximum mean shift in quantitative value w.r.t standard deviation due to detrimental rare variants i.e., by 'MULTIPLIER * sigma', applicable to variable effects model
+-B/%%--%%meanshiftmax_rare_protective  None  maximum mean shift in quantitative value w.r.t standard deviation due to protective rare variants i.e., by 'MULTIPLIER * sigma', applicable to variable effects model
+-c/%%--%%meanshift_common_detrimental  0.0  mean shift in quantitative value w.r.t standard deviation due to detrimental common variants i.e., by 'MULTIPLIER * sigma'
+-d/%%--%%meanshift_common_protective  0.0  mean shift in quantitative value w.r.t standard deviation due to protective common variants i.e., by 'MULTIPLIER * sigma'
+%%--%%QT_thresholds  [0.5, 0.5]  lower/uppwer percentile cutoffs for quantitative traits in extreme QT sampling
+#}
+
+#! show command option
+#{table
+Option  Default  Description
+{$<$}args{$>$}  None  type of information to display, which can be 'tests' for a list of all association tests, 'test TST' for details of an association test TST, 'FILENAME.csv' for all column names in a csv file, 'FILENAME.csv [colnames]' for values of columns in a csv file; 'FILENAME.SEQPowerDB' for all table names in a SEQPower database file, 'FILENAME.SEQPowerDB TABLE' for all column names in a table, 'FILENAME.SEQPowerDB TABLE [colnames]' for values of specified columns in a table, and 'FILENAME.SEQPowerDB TABLE [colnames] %%--%%condition QUERY' for filtered/formatted values of columns in a table. Wildcard symbol '*' for colnames is allowed.
+%%--%%border  full  table border
+#}
+
+#! execute command option
+#{table
+Option  Default  Description
+-s/%%--%%sliding  None  specify variable parameters
+-f/%%--%%fixed  None  specify fixed parameters
+%%--%%plot  False  generate plot instead of running simulations
+%%--%%dry_run  False  print generated commands to screen instead of executing them
+#}

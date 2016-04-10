@@ -1,0 +1,64 @@
+###
+#! Empirical power analysis
+###
+
+###
+# logit model
+###
+#! Power calculation
+# Option @@--method@@ specifies statistical tests to be used for empirical power calculation. To read the complete list of available statistical tests,
+spower show tests
+# and options under specific test
+spower show test CFisher
+# To simulation data under @@model 1@@, the logit model, and use methods for case control data for power analysis, multiple replicates have to be generated and the proper statistical tests for case control data have to be chosen, for example:
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP \
+               --method "CFisher" \
+               "Calpha --permutations 1000" \
+               "BurdenBt" \
+               "KBAC --permutations 1000" \
+               "WSSRankTest --permutations 1000" \
+               "VTtest --permutations 1000" \
+               -r 100 -j8
+# Several association methods can be applied to the same simulated data sets in one command. Empirical power methods requires generating multiple replicates, which is set to 100 here for a quick demonstration although in practice it is best to use over 1000 replicates to obtain a stable estimate. Some tests are permutation based, which, in the above example, uses only 1000 permutations to evaluate p-value. For comparison with a significance level {$\(\alpha=0.05\)$} 1000 permutations is arguably sufficient. However for whole exome association analysis with significance level {$\(\alpha=2.5\times10^{-6}\)$} large number of permutation will be required (over {$\(10^6\)$} permutations). In real world analysis, permutation based tests can be carried out via an ``adaptive'' approach (see @@--adaptive@@ option for permutation based association methods), and since most tests in the whole exome scan are not significant and will not require many permutations for p-value estimate, the permutation tests are fairly efficient in such situations. However for power calculation purposes, to achieve power greater than 80% it requires over 80% of the association tests to be significant, meaning that most replicates will require large number of permutations. Permutation based method are therefore not good for power analysis for small {$\(\alpha\)$} levels. Instead one can use some less powerful yet not permutation based methods (e.g., @@CFisher@@, @@BurdenBt@@) to estimate the lower bound of power at small {$\(\alpha\)$} level.
+#! Sample size calculation
+# Sample size estimation for empirical power calculation methods can be done via a simple search script. For example, we want to evaluate sample size for power greater than 80% under the settings above, we use @@CFisher@@ test starting from sample size 3000 at an interval of 200 samples for 10 searches, at 200 replicate each:
+for i in {2000..5000..200}; do
+    spower LOGIT KIT.gdat -a 1.5 --sample_size $i --alpha 0.05 -v2 -o K1AP$i -m CFisher --replicate 200 -j8
+    spower show K1AP$i.csv power
+done
+# The 10 resulting powers range from 0.52 to 0.91, with sample size around 4000 having power of 80%. Thus we conclude that in order to achieve 80% under this setting, the sample size has to be roughly 4000. To fine tune the estimate one can narrow the search range and increase number of replicates, based on the result of the rough search.
+#! Model options
+# The same simulation model options in the [analytic analysis|@http://bioinformatics.org/spower/analytic-tutorial@] applies to empirical analysis. Additionally for all empirical power calculation (case control or quantitative traits data) SEQPower allows for modeling of sequencing / genotyping artifact such as missing data and error calls. Essentially such artifact will result in loss of power. Please refer to tutorial on [simulation of artifact|@http://bioinformatics.org/spower/artifact@] for details on these model options.
+#! Test options
+# Association test specific options are documented as help messages viewed by @@spower show test TST@@ where @@TST@@ is name of the association test. Please refer to a [brief documentation|@http://bioinformatics.org/spower/options#association_options@] on shared test options for details.
+###
+# PAR model
+###
+# Empirical power and sample size calculations under PAR model is very similar to the logit model, except the options for effect size (@@-a/b/c/d@@) have different interpretations. See [PAR model documentation|@http://bioinformatics.org/spower/mpar@] for details. Example:
+spower PAR KIT.gdat -a 0.01 --sample_size 2000 --alpha 0.05 -v2 -o K1AP \
+               --method "CFisher" \
+               "Calpha --permutations 1000" \
+               "BurdenBt" \
+               "KBAC --permutations 1000" \
+               "WSSRankTest --permutations 1000" \
+               "VTtest --permutations 1000" \
+               -r 100 -j8
+###
+# Linear model
+###
+#! Basic example
+# To calculate power at given sample size assuming equal case control samples (1000 cases, 1000 controls) defined by 25 and 75 percentile of QT values from quantitative traits simulation with an effect size of {$\(0.1\sigma\)$}, evaluated at {$\(\alpha=0.05\)$}:
+spower BLNR KIT.gdat -a 0.1 --QT_thresholds 0.25 0.75 --sample_size 2000 --p1 0.5 --alpha 0.05 -v2 -o K1AP \
+               --method "CFisher" \
+               "Calpha --permutations 1000" \
+               "BurdenBt" \
+               "KBAC --permutations 1000" \
+               "WSSRankTest --permutations 1000" \
+               "VTtest --permutations 1000" \
+               -r 100 -j8
+#{------
+###
+# Graphic summary for exome-wide power analysis
+###
+# Example [input data|@http://tigerwang.org/uploads/spower-results.tar.gz@] and [output graph|@http://tigerwang.org/uploads/EA.OR2power80.result.pdf@]
+#}-------

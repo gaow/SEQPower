@@ -1,0 +1,50 @@
+###
+#! About
+###
+# SEQPower provides statistical power analysis and sample size estimation for sequence-based association studies
+
+###
+# Developers
+###
+#{list
+# Gao Wang, [Baylor College of Medicine|@http://www.bcm.edu/@]
+# Biao Li, Baylor College of Medicine
+# Regie Lyn Santos-Cortez, Baylor College of Medicine
+# Bo Peng, [The University of Texas MD Anderson Cancer Center|@http://www.mdanderson.org@]
+# Suzanne Leal, Baylor College of Medicine
+#}
+###
+# Major Features
+###
+#{list
+# Power and sample size calculation for rare variant association study designs
+# Power comparison of rare variant association methods
+# Validation and evaluation of novel association tests
+#}
+#! SEQPower Analysis Flowchart
+#* spower-flow.png 800
+#! Quick Start Guide!
+# Here is a [short tutorial|@http://bioinformatics.org/spower/quickstart@] using SEQPower to perform power analysis. We encourage you to walk through this minimal example to get a feel of the software and assess its helpfulness.
+###
+# How to Cite SEQPower
+###
+# G. T. Wang, B. Li, R. L. P. Santos-Cortez, B. Peng and S. M. Leal, Power analysis and sample size estimation for sequence-based association studies. "Bioinformatics". (2014) [ [pubmed] |@http://www.ncbi.nlm.nih.gov/pubmed/24778108@]
+###
+# Acknowledgment
+###
+# Development of SEQPower was supported by the [NHLBI Exome Sequencing Project|@https://esp.gs.washington.edu/drupal/@], the [Minority Health GRID project|@https://rcenterportal.msm.edu/node/146@], and the [Centers for Mendelian Genomics|@http://www.mendelian.org/@].
+
+###
+#! ChangeLog
+###
+#{list
+# ""2015.07.20"" Release of SEQPower 1.1.0
+## {$<$}color red{$>$}"What's new?"{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/changelog@]
+# ""2014.08.20"" Release of SEQPower 1.0.1
+## {$<$}color red{$>$}"What's new?"{$<$}/color{$>$} [>>|@http://bioinformatics.org/spower/changelog@]
+# ""2014.06.10"" Release of SEQPower 1.0.0
+# ""2014.01.22"" Release of SEQPower 1.0 rc1
+# ""2013.10.08"" Release of SEQPower 1.0 beta
+# ""2013.05.05"" Initial public release, under project name "RarePower"
+# ""2010.07.31"" Project conceived
+#}

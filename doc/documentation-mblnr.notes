@@ -1,0 +1,229 @@
+###
+#! Linear model binary outcome
+###
+# Under this model, case control status are simulated based on QT values. Quantitative traits are generated; Cases are defined as samples having QT values larger than {$\(p^{th}\)$} upper percentile, and controls are samples having QT values smaller than {$\(q^{th}\)$} lower percentile. Since under this model MAF for case or ctrl groups are mathematically intractable, only empirical power and sample size analysis are applicable.
+
+###
+# Command interface
+###
+spower BLNR -h
+#{out
+usage: spower BLNR [-h] [-a MULTIPLIER] [-b MULTIPLIER] [-A MULTIPLIER]
+                   [-B MULTIPLIER] [-c MULTIPLIER] [-d MULTIPLIER]
+                   [--QT_thresholds C C] [--sample_size N] [--p1 P]
+                   [--def_rare P] [--def_neutral VALUE VALUE]
+                   [--def_protective VALUE VALUE] [-P P] [-Q P]
+                   [--def_valid_locus VALUE VALUE] [--rare_only]
+                   [--missing_as_wt] [--missing_low_maf P] [--missing_sites P]
+                   [--missing_sites_deleterious P]
+                   [--missing_sites_protective P] [--missing_sites_neutral P]
+                   [--missing_sites_synonymous P] [--missing_calls P]
+                   [--missing_calls_deleterious P]
+                   [--missing_calls_protective P] [--missing_calls_neutral P]
+                   [--missing_calls_synonymous P] [--error_calls P]
+                   [--error_calls_deleterious P] [--error_calls_protective P]
+                   [--error_calls_neutral P] [--error_calls_synonymous P]
+                   [--power P] [-r N] [--alpha ALPHA] [--moi {A,D,R,M}]
+                   [--resampling] [-l N] [-o file] [-t NAME] [-v {0,1,2,3}]
+                   [-s N] [-j N] [-m METHODS [METHODS ...]]
+                   [--discard_samples [EXPR [EXPR ...]]]
+                   [--discard_variants [EXPR [EXPR ...]]]
+                   DATA
+
+positional arguments:
+  DATA                  name of input data or prefix of input data bundle (see
+                        the documentation for details)
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+model parameters:
+  -a MULTIPLIER, --meanshift_rare_detrimental MULTIPLIER
+                        mean shift in quantitative value w.r.t standard
+                        deviation due to detrimental rare variants i.e., by
+                        "MULTIPLIER * sigma" (default set to 0.0)
+  -b MULTIPLIER, --meanshift_rare_protective MULTIPLIER
+                        mean shift in quantitative value w.r.t. standard
+                        deviation due to protective rare variants i.e., by
+                        "MULTIPLIER * sigma" (default set to 0.0)
+  -A MULTIPLIER, --meanshiftmax_rare_detrimental MULTIPLIER
+                        maximum mean shift in quantitative value w.r.t
+                        standard deviation due to detrimental rare variants
+                        i.e., by "MULTIPLIER * sigma", applicable to variable
+                        effects model (default set to None)
+  -B MULTIPLIER, --meanshiftmax_rare_protective MULTIPLIER
+                        maximum mean shift in quantitative value w.r.t
+                        standard deviation due to protective rare variants
+                        i.e., by "MULTIPLIER * sigma", applicable to variable
+                        effects model (default set to None)
+  -c MULTIPLIER, --meanshift_common_detrimental MULTIPLIER
+                        mean shift in quantitative value w.r.t standard
+                        deviation due to detrimental common variants i.e., by
+                        "MULTIPLIER * sigma" (default set to 0.0)
+  -d MULTIPLIER, --meanshift_common_protective MULTIPLIER
+                        mean shift in quantitative value w.r.t standard
+                        deviation due to protective common variants i.e., by
+                        "MULTIPLIER * sigma" (default set to 0.0)
+  --QT_thresholds C C   lower/uppwer percentile cutoffs for quantitative
+                        traits in extreme QT sampling, default to "0.5 0.5"
+  --moi {A,D,R,M}       mode of inheritance: "A", additive (default); "D",
+                        dominant; "R", recessive; "M", multiplicative (does
+                        not apply to quantitative traits model)
+  --resampling          directly draw sample genotypes from given haplotype
+                        pools (sample genotypes will be simulated on the fly
+                        if haplotype pools are not avaliable)
+
+sample population:
+  --sample_size N       total sample size
+  --p1 P                proportion of affected individuals (default set to
+                        0.5), or individuals with high extreme QT values
+                        sampled from infinite population (default set to None,
+                        meaning to sample from finite population speficied by
+                        --sample_size option).
+
+variants functionality:
+  --def_rare P          definition of rare variants: variant having "MAF <=
+                        frequency" will be considered a "rare" variant; the
+                        opposite set is considered "common" (default set to
+                        0.01)
+  --def_neutral VALUE VALUE
+                        annotation value cut-offs that defines a variant to be
+                        "neutral" (e.g. synonymous, non-coding etc. that will
+                        not contribute to any phenotype); any variant with
+                        "function_score" X falling in this range will be
+                        considered neutral (default set to None)
+  --def_protective VALUE VALUE
+                        annotation value cut-offs that defines a variant to be
+                        "protective" (i.e., decrease disease risk or decrease
+                        quantitative traits value); any variant with
+                        "function_score" X falling in this range will be
+                        considered protective (default set to None)
+  -P P, --proportion_detrimental P
+                        proportion of deleterious variants associated with the
+                        trait of interest, i.e., the random set of the rest (1
+                        - p) x 100% deleterious variants are non-causal: they
+                        do not contribute to the phenotype in simulations yet
+                        will present as noise in analysis (default set to
+                        None)
+  -Q P, --proportion_protective P
+                        proportion of protective variants associated with the
+                        trait of interest, i.e., the random set of the rest (1
+                        - p) x 100% protective variants are non-causal: they
+                        do not contribute to the phenotype in simulations yet
+                        will present as noise in analysis (default set to
+                        None)
+
+quality control:
+  --def_valid_locus VALUE VALUE
+                        upper and lower bounds of variant counts that defines
+                        if a locus is "valid", i.e., locus having number of
+                        variants falling out of this range will be ignored
+                        from power calculation (default set to None)
+  --rare_only           remove from analysis common variant sites in the
+                        population, i.e., those in the haplotype pool having
+                        MAF > $def_rare
+  --missing_as_wt       label missing genotype calls as wildtype genotypes
+
+sequencing / genotyping artifact:
+  --missing_low_maf P   variant sites having population MAF < P are set to
+                        missing
+  --missing_sites P     proportion of missing variant sites
+  --missing_sites_deleterious P
+                        proportion of missing deleterious sites
+  --missing_sites_protective P
+                        proportion of missing protective sites
+  --missing_sites_neutral P
+                        proportion of missing neutral sites
+  --missing_sites_synonymous P
+                        proportion of missing synonymous sites
+  --missing_calls P     proportion of missing genotype calls
+  --missing_calls_deleterious P
+                        proportion of missing genotype calls at deleterious
+                        sites
+  --missing_calls_protective P
+                        proportion of missing genotype calls at protective
+                        sites
+  --missing_calls_neutral P
+                        proportion of missing genotype calls at neutral sites
+  --missing_calls_synonymous P
+                        proportion of missing genotype calls at synonymous
+                        sites
+  --error_calls P       proportion of error genotype calls
+  --error_calls_deleterious P
+                        proportion of error genotype calls at deleterious
+                        sites
+  --error_calls_protective P
+                        proportion of error genotype calls at protective sites
+  --error_calls_neutral P
+                        proportion of error genotype calls at neutral sites
+  --error_calls_synonymous P
+                        proportion of error genotype calls at synonymous sites
+
+power calculation:
+  --power P             power for which total sample size is calculated (this
+                        option is mutually exclusive with option '--
+                        sample_size')
+  -r N, --replicates N  number of replicates for power evaluation (default set
+                        to 1)
+  --alpha ALPHA         significance level at which power will be evaluated
+                        (default set to 0.05)
+
+input/output specifications:
+  -l N, --limit N       if specified, will limit calculations to the first N
+                        groups in data (default set to None)
+  -o file, --output file
+                        output filename
+
+runtime options:
+  -t NAME, --title NAME
+                        unique identifier of a single command run (default to
+                        output filename prefix)
+  -v {0,1,2,3}, --verbosity {0,1,2,3}
+                        verbosity level: 0 for absolutely quiet, 1 for less
+                        verbose, 2 for verbose, 3 for more debug information
+                        (default set to 2)
+  -s N, --seed N        seed for random number generator, 0 for random seed
+                        (default set to 0)
+  -j N, --jobs N        number of CPUs to use when multiple replicates are
+                        required via "-r" option (default set to 2)
+
+association tests:
+  -m METHODS [METHODS ...], --methods METHODS [METHODS ...]
+                        Method of one or more association tests. Parameters
+                        for each method should be specified together as a
+                        quoted long argument (e.g. --methods "m --alternative
+                        2" "m1 --permute 1000"), although the common method
+                        parameters can be specified separately, as long as
+                        they do not conflict with command arguments. (e.g.
+                        --methods m1 m2 -p 1000 is equivalent to --methods "m1
+                        -p 1000" "m2 -p 1000".). You can use command 'spower
+                        show tests' for a list of association tests, and
+                        'spower show test TST' for details about a test.
+
+samples and genotypes filtering:
+  --discard_samples [EXPR [EXPR ...]]
+                        Discard samples that match specified conditions within
+                        each test group. Currently only expressions in the
+                        form of "%(NA)>p" is provided to remove samples that
+                        have more 100*p percent of missing values.
+  --discard_variants [EXPR [EXPR ...]]
+                        Discard variant sites based on specified conditions
+                        within each test group. Currently only expressions in
+                        the form of '%(NA)>p' is provided to remove variant
+                        sites that have more than 100*p percent of missing
+                        genotypes. Note that this filter will be applied after
+                        "--discard_samples" is applied, if the latter also is
+                        specified.
+#}
+###
+# Details
+###
+# Model specific options are similar to options in [@@LNR@@|@http://bioinformatics.org/spower/lnr@] model. General simulation and analysis options are [otherwise documented|@http://bioinformatics.org/spower/options@]. The infinite sample pool method is triggered by @@--p1@@ option. If @@--p1@@ is not specified, the finite sample pool method will be used.
+#! --QT_thresholds
+# This option takes two values, the lower and upper QT percentile cutoff which defines case control status. QT values under the lower cutoff are considered controls; QT values higher than the upper cutoff are considered cases.
+###
+# Examples
+###
+#{list
+# [Empirical power analysis|@http://bioinformatics.org/spower/empirical-tutorial@] for case control studies
+#}

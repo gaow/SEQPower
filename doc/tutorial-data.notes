@@ -1,0 +1,19 @@
+###
+# EVS data derived haplotype pool
+###
+wget http://evs.gs.washington.edu/evs_bulk_data/ESP6500SI-V2.snps_indels.vcf.tar.gz
+#{text evs.fmt
+file:///~/Dropbox/Archive/Research/Projects2013/NSHLExomes/evs.fmt
+#}
+vtools init evs
+vtools import ESP6500SI-V2.snps_indels.vcf.tar.gz  --format evs.fmt  -j8 --build hg19
+#{out
+INFO: Importing variants from ESP6500SI-V2.snps_indels.vcf.tar.gz (1/1)
+ESP6500SI-V2.snps_indels.vcf.tar.gz: 100% [===================] 1,467,290 13.1K/s in 00:01:51
+INFO: 1,998,173 new variants (1,872,893 SNVs, 40,527 insertions, 84,784 deletions, 773 invalid) from 1,987,119 lines are imported.
+#}
+vtools show fields
+vtools output variant Genes EuropeanAmericanMaf chr pos FunctionGvs | gzip > EVSEA.gz
+vtools output variant Genes AfricanAmericanMaf chr pos FunctionGvs | gzip > EVSAA.gz
+vtools output variant Genes EuropeanAmericanRefCount EuropeanAmericanAltCount | gzip > EVSEACounts.gz
+vtools output variant Genes AfricanAmericanRefCount AfricanAmericanAltCount | gzip > EVSAACounts.gz

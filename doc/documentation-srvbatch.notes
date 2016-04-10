@@ -1,0 +1,193 @@
+###
+#! Forward-time simulation with SRV
+###
+
+# The original @@srv@@ simulator was authored by [Bo Peng, 2011 | @DOI://10.1159/000323316@] ([download|@http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/SimuRareVariants@]). SEQPower expands the @@srv@@ simulator to allow for additional demographic models and specification of selection coefficients. It also saves generated data in a compressed format compatible with SEQPower's power calculation input.
+
+#{note
+# This feature is available only in the ``Full'' version of SEQPower.
+#}
+###
+# Highlights
+###
+
+# The @@srv@@ method repeatedly simulating a population of sequences forward in time, subject to mutation, natural selection and demography. Because most mutants are introduced during the rapid population expansion, most of the alleles will be rare at the end of any replicate of the simulation. Samples simulated using this script can be used to study genetic diseases caused by a large number of rare variants. Data pools of generated mutant-site allele frequencies can be applied to assign genotype of confounder individuals.
+
+###
+# Default output
+###
+# The output contains
+#{list
+# @@*.sfs@@ file, which contains variant site-specific information of each simulated replicate, such as minor allele frequency (maf), position (pos), selection coefficient (annotation), etc. Each row corresponds to each mutant site for a replicate. Columns are replicate ID, maf, sel and pos information.
+# @@*.gdat@@ file, which stores generated haplotype pools in a compressed binary format that can be loaded by SEQPower for power calculations.
+#}
+###
+# Usage
+###
+# Type
+spower simulate -h
+# To read all command line options, or see below for a complete table of command arguments.
+
+###
+# Examples
+###
+# Please read [this tutorial|@http://bioinformatics.org/spower/srvbatch-tutorial@] for simulation examples.
+
+###
+# Commandline Options
+###
+#!!!-h, @@--@@help
+#{list
+#Display this help message and exit
+#}
+#!!!@@--@@config | "ARG (default: None)"
+#{list
+#Load parameters from a configuration file ARG
+#}
+#!!!@@--@@optimized
+#{list
+#Run the script using an optimized simuPOP module
+#}
+#!!!@@--@@gui | "<batch|interactive|True|Tkinter|wxPython> (default: None)"
+#{list
+#Run the script in batch, interactive or GUI mode
+#}
+#!!!@@--@@regRange | "ARG (default: [2500, 5000])"
+#{list
+#" Gene Length (range) "
+#The length of gene region for each time of evolution is taken as a random number within the range of region
+#If a fixed number of gene length N is required, this parameter should be set as [N, N]
+#}
+#!!!@@--@@fileName | "ARG (default: 'MySimuRV')"
+#{list
+#" Output Files Name (prefix) "
+#}
+#!!!@@--@@numReps | "ARG (default: 3)"
+#{list
+#" Number of Replicates "
+#}
+#!!!@@--@@N | "ARG (default: [8100, 8100, 7900, 9000])"
+#{list
+#" Effective Population Sizes "
+#Assuming a n (n = array length - 1) stage demographic model, this parameter specifies population sizes at the beginning of evolution and at the end of each stage N_0,...,N_n
+#If N_i < N_i+1, an exponential population expansion model will be used to expand population from size N_i to N_i+1
+#If N_i > N_i+1, an instant population reduction will reduce population size to N_i+1
+#For example, N=[5000, 5000, 800, 30000], which simulates a three stage demographic model where a population beginning with 5000 individuals first undergoes a burn-in stage with constant population size 5000, then goes through a bottleneck of 800 indiviudals, and after that expands exponentially to a size of 30000
+#}
+#!!!@@--@@G | "ARG (default: [500, 10, 370])"
+#{list
+#" Numbers of Generations per Stage "
+#Numbers of generations of each stage of a n stage demographic model
+#This parameter should have n elements, in comparison to n+1 elements for parameter N (Effective Population Sizes)
+#}
+#!!!@@--@@mutationModel | "ARG (default: 'finite_sites')"
+#{list
+#" Mutation Model "
+#Mutation model
+#The default mutation model is a finite-site model that allows mutations at any locus
+#If a mutant is mutated, it will be back- mutated to a wildtype allele
+#Alternatively, an infinite-sites model can be simulated where new mutants must happen at loci without existing mutants, unless no vacant locus is available (a warning message will be printed in that case)
+#}
+#!!!@@--@@mu | "ARG (default: 1.8e-08)"
+#{list
+#" Mutation Rate "
+#Mutation rate per base pair
+#}
+#!!!@@--@@revertFixedSites | "(default: False)"
+#{list
+#" Revert Fixed Sites? "
+#Whether or not to revert fixed mutant sites to wild-type sites
+#}
+#!!!@@--@@selModel | "ARG (default: 'additive')"
+#{list
+#" Multi-locus Selection Model "
+#Multi-locus selection model, namely how to obtain an overall individual fitness after obtaining fitness values at all loci
+#This script supports three models: -- multiplicative: Product of individual fitness
+#"" additive: One minus the combined selection deficiencies""
+#"" exponential: Exponential of combined selection deficiencies""
+#""Note"" Each fitness can be equal to or greater than zero, which represents neutral loci, or loci under positive selection
+#}
+#!!!@@--@@selDist | "ARG (default: 'Boyko_2008_European')"
+#{list
+#" Selection Coefficient Distribution Model "
+#Distribution of selection coefficient for new mutants
+#Each distribution specifies s (selection coefficient) and h (dominance coefficient, default to 0.5 for additivity) that assign fitness values 1, 1-hs and 1-s for genotypes AA (wildtype), Aa and aa, respectively
+#Note that positive s is used for negative selection so negative s is needed to specify positive selection
+#Note that we use 2k in the default distribution of Gamma distributions because theoretical estimates of s is for each mutant with 1-2s as fitness value for genotype aa in our model
+#This script currently supports the following distributions
+#"" constant: A single selection coefficient that gives each mutant a constant value s""
+#The default parameter for this model is 0.01, 0.5
+#You can set selCoef to [0, 0] to simulate neutral cases or a negative value for positive selection
+#"" Eyre-Walker_2006: A basic gamma distribution assuming a constant population size model (Eyre-Walker et al, 2006)""
+#The default parameters for this model is Pr(s=x)=Gamma(0.23, 0.185*2), with h=0.5
+#A scaling parameter 0.185*2 is used because s in our simulation accounts for 2s for Eyre-Walker et al
+#"" Boyko_2008_African: A gamma distribution assuming a two-epoch population size change model for African population (Boyko et al, 2008)""
+#The default parameters for this model is Pr(s=x)=Gamma(0.184, 0.160*2), with h=0.5
+#"" Boyko_2008_European: A gamma distribution (for s) assuming a complex bottleneck model for European population (Boyko et al, 2008)""
+#The default parameters for this model is Pr(s=x)=Gamma(0.206, 0.146*2) with h=0.5
+#""Note"": If you would like to define your own selection model, please define your own function and pass it to parameter 'Customized Selection Coefficient' next to this one in the interface
+#}
+#!!!@@--@@selCoef | "ARG (default: [])"
+#{list
+#" Customized Selection Coefficient "
+#Customized selection coefficient distribution model
+#If None is given, the default value of distribution selected in the previous parameter 'Selection Coefficient Distribution Model' will be used
+#""Note"" Length of this parameter determines which type of model to use and values specify distribution coefficients
+#"" length = 0: [] --  no customized input""
+#"" length = 2: [s, h] -- constant selection coefficient (s) and dominance coefficient (h)""
+#"" length = 3: [k, d, h] -- gamma distributed selection coefficient, where k, d are shape, scale parameters of gamma distribution and h is dominance coefficient""
+#"" length = 5: [p, s, k, d, h] -- mixed-gamma distributed selection coefficient, where p is the probability of having the selection coefficient equal to s; k, d are shape and scale parameters of gamma distribution; h is the dominance coefficient""
+#Distribution will be truncated at [0.00001, 0.1]
+#"" length = 7: [p,s,k,d,h,l,u] -- truncated mixed gamma, where l,u are lower and upper bounds""
+#"" length = 8: [p,s,q,k1,d1,k2,d2,h] -- complex mixed gamma distribution that can generate a mix of constant, positive gamma and negative gamma distributions""
+#The negative distribution represents protective variant sites with negative selection coefficients, where q is the probability of having the selection coefficient following a positive gamma distribution with shape/scale parameters k1/d1
+#Thus, the probability of having selection coefficient following a negative/opposite gamma distribution is 1-p-q
+#The negative gamma distribution takes parameters k2 and d2
+#The positive distribution will be truncated at [0.00001, 0.1], while the negative one at [-0.1, -0.00001]
+#"" length = 12: [p,s,q,k1,d1,k2,d2,h,l1,u1,l2,u2] -- truncated complex mixed gamma distribution, where [l1,u1], [l2,u2] are lower/upper bounds or [k1,d1] and [k2,d2] gamma distributions, respectively""
+#For example, Parameter [0.001, 0] for a constant model defines a recessive model with fixed s
+#Recomended parameter for mixed-gamma is [0.37, 0.0, 0.184, 0.160*2, 0.5] for Prob(s=0.0)=0.37 (neutral or synonymous) and Prob(s=x)=(1-0.37)*Gamma(0.184,0.160*2)
+#}
+#!!!@@--@@selRange | "ARG (default: [1e-05, 0.01])"
+#{list
+#Generated selection coefficient is truncated by range limits
+#}
+#!!!@@--@@recRate | "ARG (default: 0)"
+#{list
+#" Recombination Rate "
+#Recombination rate per base pair
+#If r times loci distance is greater than 0.5, a rate of 0.5 will be used
+#}
+#!!!@@--@@verbose | "ARG (default: 1)"
+#{list
+#" Screen Output Mode (-1, 0 or 1) "
+#-1 -- quiet, no screen output 0 -- minimum, minimum output of simulation progress and time spent for each replicate 1 -- regular, regular screen output of statistics, simulation progress and time spent
+#}
+#!!!@@--@@steps | "ARG (default: [100])"
+#{list
+#" Detailed Screen Output Interval per Stage "
+#Calculate and output statistics at intervals of specified number of generations
+#A single number or a list of numbers for each stage can be specified
+#If left unspecified, statistics from the beginning to the end of every generation of each stage will be printed out
+#}
+#!!!@@--@@saveGenotype | "ARG (default: 0)"
+#{list
+#" Save Genotype for Replicates "
+#Optional output of genotype information
+#This option is turned off by default 0 because this format is not efficient in storing a small number of mutants
+#If specified by a positive number n, genotype in standard .ped format for the first n replicates will be outputted to n files
+#For example
+#1 -- genotype of the first replicate will be saved to file
+#3 -- genotype of the first three replicates will be outputted to three files
+#In particular, if specified as -1, genotype information of ALL simulation replicates will be saved
+#}
+#!!!@@--@@saveStat | "ARG (default: 0)"
+#{list
+#" Save Statistics for Replicates "
+#This optional parameter (default None) may output statistics to files
+#It should be specified in the same manner as 'Save Genotype for Replicates' requires
+#}
+#!!!@@--@@variantPool | "(default: True)"
+#{list
+#Output variant data pool in addition to site-frequency spectrum (sfs)
+#}

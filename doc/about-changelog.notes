@@ -1,0 +1,61 @@
+###
+#! Version history
+###
+###
+# 1.1.0
+###
+#! Major new features
+#{list
+# Reimplemented @@gdata@@ infrastructure. ""All users should update to this version because it is no longer compatible with previous gdata format implementation"". The data release have also been updated.
+# More association tests included: a partial list of [@@rvtests@@|@https://github.com/zhanxw/rvtests@] and a @@QuickRegression@@ routine.
+# Development moved to @github.com@ to take advantage of its ``issue'' tracker system for interaction with users.
+#}
+#{note
+# Binary releases of @@SEQPower@@ is no longer provided or supported.
+#}
+###
+# 1.0.1
+###
+# Fix a critical regression bug that makes @@--proportion_detrimental@@ crippled under default setting of @@--def_disruptive@@
+#{note
+# The binary release of @@SEQPower@@ now drops the ``lite'' version support due to increased query and needs for the @@vtools simulate@@ feature -- we think it is better to have it by default.
+#}
+###
+# 1.0.0
+###
+#! Major new features
+#{list
+# Update default parameters to implement the European demographic model recently published [Gazave et al (2013)] for @@spower simulate@@
+# Add @@--replicate -1@@ option to allow for calculating average power/sample size estimates over the entire input data file
+# Add @@--missing_unlisted@@ option to include a list of variants that mimics the exome chip design
+#}
+#! Minor new features
+#{list
+# Implement the truncated selection coefficient distribution (Kyrukov et al 2009) model. See updated @@spower simulate -h@@
+# Color optimization for plots
+#}
+###
+# 1.0rc1
+###
+#! Major new features
+#{list
+# Command interface change, with improved naming convention for phenotype models
+# Significant improvement on storage data format for haplotype pools
+# Add @@spower simulate@@ command. Now SEQPower has two versions: ``Lite'' (without this command) and ``Full'' (with this command).
+# Add @@spower execute --plot@@ command
+# @@spower show@@ is now compatible with SEQPower database input file
+#}
+#! Minor new features
+#{list
+# Improved format for @@spower show@@ output result
+# Change output for @@GroupWrite@@ to haplotypes; the minor allele count genotype output is still available with an additional switch @@--recode@@ on
+# Add @@--limit@@ switch to restrict calculation to specified number of association units
+# Add more simulated data set. Users need to completely update all haplotype pools data as the binary data format with release 1.0 beta are no longer supported
+# Improved installation package for MacOSX
+#}
+#! Maintenance
+# Various minor bug fixes
+###
+# 1.0beta
+###
+# First public release of SEQPower

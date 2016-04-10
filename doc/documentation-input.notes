@@ -1,0 +1,75 @@
+###
+#! SEQPower Input 
+###
+###
+# Data Download
+###
+#[{{icons:download.png?64}}|@http://bioinformatics.org/spower/download/data@]
+# We provide simulated site frequency spectrum as well as real world data:
+#{list
+# Folder @@SRV@@ contains simulated SFS and haplotype pool data generated with [@@spower simulate@@|@http://bioinformatics.org/spower/srvbatch@] using:
+## [Boyko et al|@DOI://10.1371/journal.pgen.1000083@] African and European population demographic models with purifying selection
+## [Kryukov et al|@DOI://10.1073/pnas.0812824106@] European population demographic models with purifying selection
+# Files @@AfricanAmericanEVS6500.sfs.gz@@ and @@EuropeanAmericanEVS6500.sfs.gz@@ are real world SFS extracted from the [Exome Variant Server|@http://evs.gs.washington.edu@]. The fourth column is SIFT score. 
+# File @@KIT.gdat@@ contains haplotype pool data on "KIT" gene from 1000 genomes project.
+#}
+###
+# Site Frequency Spectrum Data
+###
+# The site frequency spectrum input data for SEQPower should have 4 columns
+#{list
+# ""Column 1"": Gene / group name. This column defines an association test unit. For variants with the same group name, they will be aggregated together in association testing for rare variants. For single variant analysis (e.g., for test of common variants) each variant should have a different group name in order to be analyzed in different tests.
+# ""Column 2"": MAF. Minor allele frequency of each variant site.
+# ""Column 3"": Variant ID. Usually it can simply be the chromosomal position of the variant.
+# ""Column 4 (optional)"": Annotation score. This defines the functionality of a variant. In simulated data it can be quantities such as selection coefficients; in real sequence data it can be an annotation score such as SIFT or Polyphen2 values. The annotation score is meaningful when there exists some cut-offs such that neutral, protective and deleterious variants can be defined by the scores compared to the cut-offs.
+#}
+# In input text, lines starting with ``#'' will be ignored. This allows for additional notes or comments in the input SFS data.
+###
+# Haplotype Pool Data
+###
+# Using haplotype pool data keeps the LD structure and singleton, doubleton, etc. distribution in real world human haplotypes, thus could result in more realistic power analysis. Haplotype pool data can be generated via @@spower simulate@@ module and we provide pre-generated haplotype pools. However currently (August, 2013) there is no publicly available exome-wide haplotype pools with reasonably large sample size for a single population group for power analysis purposes. For an illustration of the feature we provide data from 1000 genome project @@KIT.gdat@@ which contains the variants and haplotypes for "KIT" gene. It is not recommended to use this data set for power analysis due to the limited sample size and the fact that the haplotypes are from more than one population in 1000 genome project. Please [contact the developers|@http://bioinformatics.org/spower/support@] for assistance if you find a publicly available real world haplotype pool that you are interested in converting to SEQPower input format.
+#{----------
+# However with instructions below, you can prepare your own haplotype pool and use with SEQPower.
+# The "KIT" data we provide contains SFS file @@KIT.sfs@@ with 24 variants on chromosome 4:
+#{out
+KIT  0.000457875457875  55524145
+KIT  0.00274725274725   55524161
+KIT  0.000457875457875  55561658
+KIT  0.000457875457875  55561805
+KIT  0.000457875457875  55561861
+KIT  0.000457875457875  55564614
+KIT  0.000457875457875  55564616
+KIT  0.000457875457875  55570043
+KIT  0.000457875457875  55570067
+KIT  0.000457875457875  55589808
+KIT  0.000915750915751  55589871
+KIT  0.000915750915751  55592059
+KIT  0.000457875457875  55592061
+KIT  0.000457875457875  55592175
+KIT  0.000457875457875  55593538
+KIT  0.000457875457875  55593551
+KIT  0.000457875457875  55593560
+KIT  0.000457875457875  55593608
+KIT  0.000457875457875  55594068
+KIT  0.000457875457875  55597989
+KIT  0.000457875457875  55598024
+KIT  0.000457875457875  55598029
+KIT  0.000457875457875  55598065
+KIT  0.000457875457875  55599206
+#}
+# The haplotype pool for "KIT" is @@KIT.txt@@
+#{out
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+... ...
+#}
+# which has 2184 rows and 24 columns. To use the haplotype pool, for example: 
+spower M3 KIT.sfs -a 2 --sample_size 1000 --sample_from KIT.txt
+# If it is the first time the data is used, you may @@--sample_from@@ the text file as shown above, and a binary file @@*.gdat@@ is automatically generated. In future analysis you can use the binary haplotype pool instead, for example:
+spower M3 KIT.sfs -a 2 --sample_size 1000 --sample_from KIT.gdat
+# These commands are equivalent but using binary format of the pool will be much more computationally efficient than using text file input.
+#}-------

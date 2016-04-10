@@ -1,0 +1,47 @@
+###
+#! Simulation of DNA sequence data
+###
+###
+# Model based simulation
+###
+# Due to the cost and availability of ample real world genetic sequence data, there is currently a lack of knowledge of the number of mutation sites and distribution of minor allele frequency. To evaluate the contribution of very rare variants to observed phenotypes, simulated DNA sequence data are often generated, under various genetic model assumptions. Below is a summary of most commonly used simulation models in literature:
+#{list
+# Fixed number of variant sites, mutations across a gene region with an arbitrary, fixed minor allele frequency for each locus, with genotype frequencies determined by the Hardy-Weinberg Equilibrium (e.g. Li and Leal 2008, Han and Pan 2010)
+# Simulation of correlated variant sites by sampling haplotypes from binary haplotype pools drawn from a multivariate normal distribution using given covariance structure (Han and Pan 2010)
+# Directly sample the MAF distributions from a simple Wright-Fisher's model (Bhatia et al 2010)
+# Empirical Bayesian model that infers the ``unseen'' variant loci using available sequence data-set (Ionita-Laza et al 2009; Zhang et al 2010)
+# Coalesent simulation (e.g., programs such as ms, msHOT, GENOME)
+# Forward time simulation under a general Wright-Fisher model with arbitrary migration, demographic, selective, and mutational effects (e.g., srv, SFS_CODE)
+#}
+# [A website|@http://popmodels.cancercontrol.cancer.gov/gsr/@] has recently been launched for the registration and discovery of genetic data simulators.
+# Although it is possible to feed to SEQPower any simulated genetic sequence data, using a good data source to start with is crucial to performing reliable and realistic power and sample size evaluations. In SEQPower resource bundle we provide forward time simulation data under several published genetic model parameter settings. Complex demography for European-American and African-American populations have been constructed according to Boyko et al 2008 and Kryukov et al 2009. The effect of purifying selection has been considered in these models. To allow for different genetic effects on etiology, we simulate coding regions with 37% of variant sites being synonymous sites. This percentage is calculated using NHLBI ESP exome data (@http://evs.gs.washington.edu@). Purifying selection is negligible for synonymous variants. Variants having purifying selection coefficients greater than {$\(10^{-4}\)$} are labeled ``deleterious''. Since there is no realistic model for the fitness of ``protective'' variants, various proportions of protective variants within a gene were arbitrarily simulated using sites having selection coefficients equal zero.
+# The @@srv@@ program is a module of the general-purpose forward-time population genetics simulation environment @@simuPOP@@. @@srv@@ uses the originally specified population size rather than scaled populations, as opposed to many other forward-time simulators. We modified the @@srv@@ program to simulate multiple independent replicates in batches with default parameters tuned to generate data under models described above. This is the [simulation module|@http://bioinformatics.org/spower/srvbatch@] of SEQPower and is available in SEQPower full version.
+
+###
+# Data based simulation
+###
+# The Exome Variant Server hosts exome variants data discovered from the NHLBI Exome Sequencing Project. Currently EVS data release (ESP6500SI-V2) is taken from 6503 European American and African American samples drawn from multiple ESP cohorts and represents all of the ESP exome variant data. Each variant in the EVS database is annotated with population genetics as well as functional and clinic information, including observed population specific minor allele frequencies. The data can be used as the underlying MAF spectrum to generate haplotype pools.
+# Problem with this approach is that the observed MAF spectrum is incomplete. Assuming we have 3500 European American samples, consequently for singleton sites the observed MAF is {$\(\frac{1}{3500\times2}=1.43\times10^{-4}\)$} (forward time simulation data from the above section can generate variant sites of very low MAF, which, based on Boyko's model, can be as low as {$\(10^{-6}\)$}). To generate sequence data with more variant sites, we extrapolate new variant sites from the observed ESP data.
+# New variant sits are discovered as sample size increase. For every gene in ESP data, we first recover the haplotype pool of 3364 European American samples using the observed MAF under Hardy-Weinberg equation. We then start from a random subset of 100 samples and calculate the number of singletons, doubletons, ..., 30-tons in the subset. We then randomly add additional samples by size of 100 and calculate the same information, until we deplete the European samples. As a result we obtain the growth pattern for "x"-tons, "x"=1,2, ... 30. 500 replicates are performed for every gene, and the final result is averaged over all genes. We then empirically estimate the growth of the number of sites for each of the "x"-tons variant, where {$\(x<0.1%\times 2N\)$} (i.e., we trace variant sites having MAF smaller than 0.1%). For the rest variants with relatively high MAF we will assume we have observed all the sites within the 3364 sample data and there is no unseen variant sites of this category. 
+# We fit growth pattern of "x"-tons using a linear model. The observed 1~30 tons are good for prediction when sample size is smaller than {$\(\frac{30}{0.1%\times 2=15000}\)$}. For sample sizes larger than 15000, we need to extrapolate the growth of variant sites having more than 30 mutations. The change in growth rate between different "x"-tons is defined as {$\(\frac{\beta_x}{\beta_{x+1}}\)$} where {$\(\beta_x\)$} is the slope parameter. It is observed that as "x" increases the rate is close to a constant {$\(\delta \simeq 1.08\)$}, which is slightly greater than 1. As a result we can extrapolate the growth rate for sites with {$\(x>30\)$} using {$\(\beta_{30}\)$}. The number of variant sites for "x"-tons is thus:
+#{$
+\begin{eqnarray*}
+M_x(N)  & = & \left\{ 
+  \begin{array}{l l}
+    \beta_x\times N & \quad x \le 30\\
+    \frac{\beta_{30}}{1.08^{x-30}} \times N & \quad 30<x<0.1\%\times 2N \\ 
+    \text{observed} & \quad x\ge 0.1\%\times 2N 
+  \end{array} \right.
+\end{eqnarray*}
+#}
+# with {$\(MAF_x=\frac{x}{2N}\)$} and total number of variant sites {$\(\sum_xM_x(N)\)$}. Using the MAF spectrum thus derived, it is possible to generate haplotype pools with very rare variant sites.
+
+###
+# Direct sampling
+### 
+# Data generation methods described so far are based on simulation of MAF spectrum. Disadvantages of such simulations is that the haplotype pools ``recovered'' from MAF spectrum cannot maintain information such as linkage disequilibrium structure, recombination spots, etc. These factors may be crucial to the performance of certain statistical methods. In SEQPower it is possible to directly sample from given haplotype pools, either from simulated or from real sequence data. Haplotype data are stored in binary format, which can be converted from text files using SEQPower data conversion utilities. 
+
+### 
+# Data resource
+###
+# Simulated data sets described above are available for [download|@http://bioinformatics.org/spower/download@]. If you want to prepare your own input data set, please follow instructions on [input data format|@http://bioinformatics.org/spower/input@] to generate proper input files.   

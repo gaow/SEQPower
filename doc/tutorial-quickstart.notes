@@ -1,0 +1,371 @@
+###
+# A Quick Start Tutorial
+###
+#{----
+# Copyrighted (c) 2014 Gao Wang and Suzanne Leal
+#}----
+#! Purpose
+# Evidences suggest that rare variants in the human genome might have strong impact on the risk of complex diseases. An essential first step in designing genetic association mapping studies is to assess the sample size needed to achieve sufficient statistical power and to choose appropriate statistical methods for association testing. SEQPower employs sophisticated modeling of human genome sequences and complex diseases, and rapidly conducts customized power analysis using recently developed rare variants association methods. This tutorial demonstrates some basic examples using SEQPower to carry out power and sample size evaluations for the gene-based rare variant association study design. 
+#! Methodology
+# SEQPower provides a number of study designs and association analysis methods. The scope of this tutorial limits to evaluation of power for gene-based association tests under three association study designs: case-control, quantitative traits, and extreme quantitative traits. For case-control data, we generate phenotypes based on simulated variants in genes for the European population by modeling the odds ratio for the locus and disease prevalence. For quantitative traits data we generated a normally distributed phenotype using a linear model assuming that the genetics effects are additive. We will demonstrate power analysis using several popular association analysis methods including the Combined Multivariate Collapsing (CMC)[1], Weighted Sum Statistic (WSS)[2], Kernel Based Adaptive Cluster (KBAC)[3], Variable Threshold (VT)[4] and Sequence Kernel Assocation Test (SKAT)[5]. 
+# Simulation is involved in the calculation of power. This can be computationally intensive. In this tutorial we use a relatively small sample size of 1,000 for demonstration purposes. You may not need to run all the examples in the tutorial, but rather to read the input and output to get an idea how power evaluation is carried out for rare variants association methods. Once understood, you may compose specific commands that describe the study design in your research and obtain power/sample size estimates. For more examples please visit @http://bioinformatics.org/spower/tutorial@. 
+#{-----
+#{important
+# If, during the exercise, you want to terminate a running SEQPower command, please first use @@ctrl-c@@ (press @@ctrl@@ and @@c@@ keys at the same time), then run in terminal @@killall spower@@ to terminate all its subprocesses.
+#}
+#}-----
+#! Data Resource
+# In this tutorial we use genetic sequence data simulated using @@spower simulate@@ command (in the ``Full'' version of SEQPower), available as @http://bioinformatics.org/spower/download/data/SRV/sfs.tar.gz@. The data bundle contains file having information on minor allele frequency (MAF) spectrum, purifying selection coefficients and variant positions, which are calculated from simulated data from the following genetic demographic models:
+#{list
+# A two-epoch model by Williamson and Eyre-Walker [6]
+# European population by Boyko "et al" [7]
+# African population by Boyko "et al" [7]
+# European population by Kryukov "et al" [8] 
+#}
+# Genes are simulated for different lengths. As an example We will use Kyrukov's European demographic model to simulate genes of length 1,800bp. Genes using other models and different lengths can be conveniently simulated using @@spower simulate@@ or other software such as @@SFSCODE@@. This tutorial will not cover the use of @@spower simulate@@ command.
+
+#! Getting started
+# Type @@spower -h@@ to view available models and options:
+spower -h
+usage: spower [-h] [--version] {LOGIT,PAR,BLNR,LNR,ELNR,show,execute} ...
+# There are currently 5 model options and two administrative options. To view information for specific model or option, type @@spower <name> -h@@, for example:
+spower LOGIT -h
+# Input of a typical SEQPower command is composed of:
+#{list
+# Model specific simulation options for variant / phenotype associations
+# Information on samples collected
+# Sequencing and genotyping artifact
+# Options for rare variants association tests (applicable for empirical power analysis)
+#}
+# The command line options for each model in SEQPower consist of one required positional argument, "i.e.", the input data, as well as a number of optional arguments. Optional arguments may have short and long syntax which are equivalent. Tables of optional arguments for each model are provided at the end of the tutorial. For clarity, in this tutorial we will use long version syntax for important optional arguments.
+# Below is the command running the LOGIT model using CMC method, with sample size 1000, and the screen output:
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 --OR_rare_detrimental 1.5 --method CFisher \
+       -r 1000 -j 4 -l 1 -o exercise
+#{out
+INFO: Loading data from [Kryukov2009European1800.sfs] ...
+INFO: 200 units found
+INFO: 1 units will be analyzed
+R1 : 100% |=======================================================================================| Time: 0:01:13
+INFO: Tuning [exercise.SEQPowerDB] ...
+INFO: Result saved to [exercise.csv/.loci.csv/.SEQPowerDB]
+#}
+#!! Organizing the output
+# The lines starting with INFO are information lines printed on screen. The output data are saved to plain text files @@*.csv@@ as well as a database file @@*.SEQPowerDB@@. You can either browse the text file with a text editor, or more conveniently, use @@spower show options@@. To show all available fields in text output,
+spower show exercise.csv
+#{text exercise.csv columns
+title
+name
+method
+power
+power_median
+power_std
+case_cmaf
+case_cmaf_median
+case_cmaf_std
+cmaf
+cmaf_detrimental
+cmaf_neutral
+cmaf_protective
+ctrl_cmaf
+ctrl_cmaf_median
+ctrl_cmaf_std
+...
+#}
+# To extract particular field, for example, the power estimate:
+spower show exercise.csv power*
+#{text power estimates
++-------+--------------+---------------+
+| power | power_median |   power_std   |
++-------+--------------+---------------+
+| 0.289 |     0.0      | 0.01433453870 |
++-------+--------------+---------------+
+#}
+#!! Logging and Summary 
+# Optional argument @@-v@@ controls verbosity levels. The default verbosity level of the program is 2, which will output all INFO and WARNING messages on the screen, as shown above, for each test unit. @@-v 1@@ will only show an overall progress bar for all test units. @@-v 0@@ will suppress all screen output. 
+# In addition to the result of power analysis in text file and database, two additional files are generated. The @@*.log@@ file records the command line history for SEQPower and all INFO, WARNING and DEBUG messages during run-time. The @@*.loci.csv@@ contains summary information of each locus of the unit being analyzed. To name a few examples:
+#{list
+# Odds ratios per locus
+# Population attributable risks per locus
+# Variants functionality per locus
+# Genotype frequency per locus
+#}
+# @@spower show@@ command can be applied to the summary text file, for example:
+spower show exercise.loci.csv
+spower show exercise.loci.csv maf
+#!! Association tests
+# Use @@spower show tests@@ to list all available tests, and @@spower show test <name>@@ to list options for a specific test.
+spower show tests
+spower show test CFisher
+
+#! Example 1: Case-control design, LOGIT model for disease status
+# In this example we will model phenotype-genotype associations by locus specific odds ratios and prevalence of disease. This model is coded as @@LOGIT@@ in SEQPower. To start with, we revisit the example in the previous section, but this time we use KBAC method, and type the options in a more complete manner.
+spower LOGIT Kryukov2009European1800.sfs \
+--def_rare 0.01 --def_neutral -0.0001 0.0001 --moi A \
+--proportion_detrimental 1 --proportion_protective 0 \
+--OR_rare_detrimental 1.5 --OR_common_detrimental 1 --baseline_effect 0.01 \
+--sample_size 1000 --p1 0.5 --limit 1 \
+--alpha 0.05 \
+--method \
+"KBAC --name K1 --mafupper 0.01 --maflower 0 --alternative 1 --moi additive --permutations 1000 --adaptive 0.1" \
+--replicates 1000 \
+--jobs 4 -o exercise
+# Here we explain a few key parameters:
+#{list
+# @@--def_rare@@ The definition of a ``rare'' variant. We usually define a rare variant as a variant having MAF below 0.01. You may prefer an alternative definition 5%.
+# @@--def_neutral@@ The definition of a ``neutral'' variant by its functional annotation score. In this simulated dataset we use selection coefficient to annotate functionality. We set it [-0.0001, 0.0001] such that variants having selection coefficient in between these values will be considered neutral. The values will be different depending on the nature of the input functional annotation scores.
+# @@--moi@@ Mode of inheritance. Most aggregated analysis methods implicitly assumes an ``additive'' effect of rare variants, thus simulating/analyzing data under additive model represents a best case scenario for many methods. However this does not always have to be the case, and there is also a @@--moi@@ option for each association method within the @@--method@@ option (see below) that controls for the assumption on MOI when the data are being analyzed.
+# @@--proportion_detrimental@@ This parameter allows us to model situations where not all deleterious variants are causal. Here we assume all deleterious variants are causal for the trait of interest. We can use a value smaller than 1.0 if we want to model the impact of non-causal variants.
+# @@--proportion_protective@@ This is the proportion of causal protective variants.
+# @@--OR_rare_detrimental@@ The odds ratio per rare detrimental variant.
+# @@--OR_common_detrimental@@ The odds ratio per common detrimental variant.
+# @@--baseline_effect@@ The base-line odds ratio in population. For common complex traits involving rare variants, this is approximately the same as prevalence of disease in population. 
+# @@--sample_size@@ Total sample size.
+# @@--p1@@ Proportion of cases. In case/ctrl study design, 50% cases and 50% controls will yield maximum power.
+# @@--limit@@ In the input data @@Kryukov2009European1800.sfs@@ there are many replicates from the same forward time simulation setting. Here for demonstration purpose we limit the calculation to only one replicate, although in practice the power analysis result should be based on multiple input data under the same simulation model.
+# @@--alpha@@ Significance level for which power will be evaluated.
+# @@--method@@ Name of statistical method to apply, see @@spower show tests@@
+## @@--name@@ A unique name assigned to a specific method. For the same method you might have different analysis parameters, in which case you may want to specify this name to distinguish between different settings. This is particularly useful when you have multiple configurations of the same method in the same command, for example @@--method 'KBAC --name K1 ... --mafupper 0.01' 'KBAC --name K5 ... --mafupper 0.05'@@ 
+## @@--mafupper 0/--maflower 0.01@@ We define rare variants within a population haplotype pool using @@--def_rare@@ option. However for many of the association test to work, we need to confine the analysis to alleles within certain frequency spectrum in our observed data. These options set the variants we want to focus on in analysis, i.e., we will only analyze variants having observed MAF between 0 and 0.01.
+## @@--alternative@@ 1 for one-sided test, 2 for two-sided test. For a test of deleterious variants only, it is more powerful to apply one-sided test.
+## @@--permutations/--adaptive@@ In the previous section we used Fisher's method for CMC test implementation, which does not require permutations. For permutation based tests the number of permutations needed depends on {$\(\alpha\)$} level. For {$\(\alpha=0.05\)$}, it is sufficient to use 1,000 permutations. For exome studies with {$\(\alpha=2.5\times 10^{-6}\)$} (Bonferroni corrected p-value for testing 20,000 genes). Although ``adaptive'' permutation method is available, it would still require a large number of tests to finish their full permutation cycle in order to complete the power analysis. Therefore in SEQPower permutation based test is not feasible to evaluate power at very small {$\(\alpha\)$} level.
+# @@--replicates@@ Number of replicates for power / sample size estimate. 
+# @@--jobs@@ Number of CPUs to be used to run the command. The input of this parameter depends on your computational environment.
+#}
+# Result of the above analysis is as follows
+#{text [exercise.csv] power for KBAC method
++-------+--------------+---------------+
+| power | power_median |   power_std   |
++-------+--------------+---------------+
+| 0.347 |     0.0      | 0.01505293991 |
++-------+--------------+---------------+
+#}
+#!! Variable effect sizes of rare variants
+# The previous example uses fixed odds ratio {$\(\gamma=1.5\)$} for detrimental variants. To use variable odds ratio, e.g. in range [1.2, 3.0], we input the following:
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 \
+       --OR_rare_detrimental 1.2 --ORmax_rare_detrimental 3.0 \
+       --method CFisher -r 1000 -j 4 -l 1 -o exercise
+# Instead of using fixed odds ratio, now the odds ratio will be generated on the fly based on the underlying minor allele frequencies. You will see the actual odds ratios in the resulting @@*.loci.csv@@ file: 
+spower show exercise.loci.csv effect*
+#{text variable effect sizes
++---------------+
+|  effect_size  |
++---------------+
+...
+|      1.0      |
+...
+| 1.42859361773 |
+...
+|      3.0      |
+| 2.99121719826 |
+| 2.99820319113 |
+| 2.99940345946 |
+|      1.2      |
+... 
+#}
+# The effect size for detrimental variants will range from 1.2 to 3.0; effect size of neutral variants is 1.0.
+#!! Presence of non-causal variants
+# Assuming only 80% of the deleterious sites are causal, we have:
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 \
+       --OR_rare_detrimental 1.2 --proportion_detrimental 0.8 \
+       --method CFisher -r 1000 -j 4 -l 1 -o exercise
+# With this option the program will still simulate all the deleterious variant sites, regardless of them being causal or not. However they do not contribute to the etiology of the disease. As a result they will present as noise in data. Result from previous command results in reduced power.
+#{text presence of non-causal variants
++-------+--------------+------------------+
+| power | power_median |    power_std     |
++-------+--------------+------------------+
+| 0.084 |     0.0      | 0.00877177291088 |
++-------+--------------+------------------+
+#}
+#!! Exclusion of causal variants
+# Different from presence of non-causal (inclusion of false positive signals), this option models situation when variants are presented in the population and may or may not have contributed to the phenotype, but were removed from sample dataset for association analysis, due to sequencing failure, low mapping quality, etc. (potential exclusion of true positive signals), for example we set 70% sites missing due to artifacts: 
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 \
+       --OR_rare_detrimental 1.2 --missing_sites 0.7 \
+       --method CFisher -r 1000 -j 4 -l 1 -o exercise
+#{text impact of missing data
++-------+--------------+------------------+
+| power | power_median |    power_std     |
++-------+--------------+------------------+
+| 0.062 |     0.0      | 0.00767050971515 |
++-------+--------------+------------------+
+#}
+# You may also model the missing proportion of sites for different variant types separately, using @@--missing_sites_*@@ options for protective variants, non-causal and deleterious variants. It is also possible to model missingness by MAF, using the @@--missing_low_maf@@ option to set variants below certain population minor allele frequency as missing, irrespective to its functionality. 
+#!! Using multiple association methods
+# It is possible to apply multiple association tests in one command, for comparison purposes. In previous sections we have introduced CMC method and KBAC method. Here we add 3 more tests:
+#{list
+# ""WSS"". The WSS method applies weights to rarer variants which can amplify the association signals if they are causal, and is powerful particularly when rarer variants are driving the associations. The method has two versions, a semi-permutation version and a full permutation version, which is triggered by the use of @@--permutation@@ option. The full version gives a more accurate power estimate but computationally intensive.
+# ""VT"". The variable threshold method maximize test statistic over all possible frequency cutoffs in the range specified by @@--maflower/--mafupper@@, and will correct for multiple testing naturally in its permutation framework.
+# ""SKAT"". This method is most powerful when both deleterious and protective variants present in data. 
+#}
+# Command below runs 5 tests simultaneously (is computationally intensive!). 
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 \
+       --OR_rare_detrimental 1.5  \
+       --method "CFisher --alternative 1" "KBAC --permutations 1000 --alternative 1" \
+       "WSSRankTest --alternative 1" "VTtest --alternative 1 --permutations 1000" "SKAT disease" \
+       -r 1000 -j 4 -l 1 -o exercise
+#{out
+INFO: Loading data from [Kryukov2009European1800.sfs] ...
+INFO: 200 units found
+INFO: 1 units will be analyzed
+R1 : 100% |=======================================================================================| Time: 0:22:17
+INFO: Tuning [exercise.SEQPowerDB] ...
+INFO: Result saved to [exercise.csv/.loci.csv/.SEQPowerDB]
+#}
+spower show exercise.csv method power
+#{text power comparison of different methods
++-------------+-------+
+|    method   | power |
++-------------+-------+
+| WSSRankTest | 0.374 |
+|    VTtest   | 0.318 |
+|   CFisher   | 0.316 |
+|     KBAC    | 0.352 |
+|     SKAT    | 0.094 |
++-------------+-------+
+#}
+#{note
+# Variable threshold method might appear under-powered in our simulation studies, because the simulation model clearly favors the other methods (MAF for defining rare variants in simulation is the same as for the variants analyzed). SKAT method will also appear under-powered, since in this simulation only deleterious variants present in data.
+#}
+#! Example 2: Quantitative traits design, linear model for QT data 
+# Simulation and analysis of quantitative traits shares some options with the previous example, and we will focus on its unique options. Take the following command for example:
+spower LNR Kryukov2009European1800.sfs --sample_size 1000 \
+       --meanshift_rare_detrimental 0.2 \
+       --method "CollapseQt --alternative 2" \
+       -r 1000 -j 4 -l 1 -o exercise
+# Notice the new options
+#{list
+# @@--meanshift_rare_detrimental@@ The genetic effect is now modeled by mean-shift in phenotype value due to the genetic factor. The unit for mean-shift is the standard deviation of the simulated trait. 
+# @@--method CollapseQt@@ The test is now the quantitative trait version of the CMC method, a linear regression Wald's statistic using collapsed genotype scores as regressors. We use a two-sided test here, a fair assumption to quantitative traits, although in the simulation only deleterious variants are modeled.
+#}
+#{text QT analysis
++-------+--------------+-----------------+
+| power | power_median |    power_std    |
++-------+--------------+-----------------+
+| 0.228 |     0.0      | 0.0132671021704 |
++-------+--------------+-----------------+
+#}
+#!! Variable effect sizes model
+# Variable effect sizes model can also be applied to the generation of QT data, for example:
+spower LNR Kryukov2009European1800.sfs --sample_size 1000 \
+       --meanshift_rare_detrimental 0.2 --meanshiftmax_rare_detrimental 0.5 \
+       --method "CollapseQt --alternative 2" \
+       -r 1000 -j 4 -l 1 -o exercise
+#{text QT analysis, variable effects model
++-------+--------------+-----------------+
+| power | power_median |    power_std    |
++-------+--------------+-----------------+
+| 0.541 |     1.0      | 0.0157581407533 |
++-------+--------------+-----------------+
+#}
+#! Example 3: Extreme quantitative traits design, the ELNR model
+# Samples with extreme quantitative traits can be obtained in two ways:
+#{list
+# Take individuals having extreme quantitative traits from an existing cohort, and obtain their genotype for association tests
+# Sample from the population only for individuals having traits above or below certain values, and obtain the genotypes of these samples for association tests
+#}
+# The default ELNR model implements the first theme:
+spower ELNR Kryukov2009European1800.sfs --sample_size 1000 \
+       --meanshift_rare_detrimental 0.2 --QT_thresholds 0.4 0.6 \
+       --method "CollapseQt --alternative 2" \
+       -r 1000 -j 4 -l 1 -o exercise
+# Notice the new options
+#{list
+# @@--QT_thresholds@@ Lower and upper cutoff for extreme traits. For this simulation it takes samples having QT values ranking below 40% percentile and samples above 60% percentile from the total 1,000 samples simulated, i.e., we will end up having {$\(1000 \times 0.4 = 400\)$} samples of low QT values and {$\(1000 \times (1-0.6) = 400\)$} samples having high QT values.
+#}
+spower show exercise.csv sample* power
+#{text extreme quantitative samples from finite population
++-------+-----------------+----------------------+
+| power |    power_std    | sample_size_analyzed |
++-------+-----------------+----------------------+
+| 0.207 | 0.0128121426779 |        800.0         |
++-------+-----------------+----------------------+
+#}
+# The ELNR with @@--p1@@ option implements the second theme:
+spower ELNR Kryukov2009European1800.sfs --sample_size 1000 --p1 0.5 \
+       --meanshift_rare_detrimental 0.5 --QT_thresholds 0.4 0.6 \
+       --method "CollapseQt --alternative 2" \
+       -r 1000 -j 4 -l 1 -o exercise
+#{list
+# @@--p1@@ With this option, samples will be taken from an infinite population having simulated trait values smaller than {$\(\Phi^{-1}(0.4)\)$} or larger than {$\(\Phi^{-1}(0.6)\)$} ({$\(\Phi\)$} is the cumulative density function for standard normal distribution), until required sample size is achieved, which is {$\(1000 \times p1\)$} and {$\(1000 \times (1-p1)\)$} for the two groups respectively.
+#}
+#{text extreme quantitative samples from finite population
++-------+-----------------+----------------------+
+| power |    power_std    | sample_size_analyzed |
++-------+-----------------+----------------------+
+| 0.877 | 0.0103860964756 |       1000.0         |
++-------+-----------------+----------------------+
+#}
+#! Example 4: Simulation-only mode
+# Sometimes we may want to simulate data-sets for purposes other than power calculation. The @@GroupWrite@@ method in SEQPower will output simulated data into bundles containing the following files:
+#{list
+# ""Genotype file"" One variant per row, first column: variant id, subsequent columns: genotype values (0/1/2/NA) of each sample.
+# ""Phenotype file"" One subject per row, first column: subject id, second column: quantitative/binary phenotypes.
+#}
+# We simulate phenotype data for all units in the input data (remove @@-l@@ option and use default @@-r@@ option for 1 replicate), under basic LOGIT model. Simulated data will be generated to folder @@ExerciseSimulation@@ as specified in @@GroupWrite@@ method.
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 --OR_rare_detrimental 1.5 \
+--method "GroupWrite ExerciseSimulation" -j 4 -o exercise -v1
+#{out simulation-only mode
+INFO: Loading data from [Kryukov2009European1800.sfs] ...
+INFO: 200 units found
+scanning: unit 200 - 100% |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| Time: 0:00:53
+$ ls ExerciseSimulation
+R100_geno.txt     R130_mapping.txt  R160_pheno.txt    R191_geno.txt     R3_mapping.txt   R6_pheno.txt
+R100_mapping.txt  R130_pheno.txt    R161_geno.txt     R191_mapping.txt  R3_pheno.txt     R70_geno.txt
+R100_pheno.txt    R131_geno.txt     R161_mapping.txt  R191_pheno.txt    R40_geno.txt     R70_mapping.txt
+R101_geno.txt     R131_mapping.txt  R161_pheno.txt    R192_geno.txt     R40_mapping.txt  R70_pheno.txt
+R101_mapping.txt  R131_pheno.txt    R162_geno.txt     R192_mapping.txt  R40_pheno.txt    R71_geno.txt
+R101_pheno.txt    R132_geno.txt     R162_mapping.txt  R192_pheno.txt    R41_geno.txt     R71_mapping.txt
+R102_geno.txt     R132_mapping.txt  R162_pheno.txt    R193_geno.txt     R41_mapping.txt  R71_pheno.txt
+...
+#}
+#! Example 5: Power calculation for a range of input parameters
+#!! Browse result output from multiple SEQPower commands
+# So far we have covered a number of SEQPower examples. With @@-o exercise@@ option in action for all examples, we have saved all results from every command in this tutorial to a database named @@exercise.SEQPowerDB@@. We browse the database by @@spower show exercise.SEQPowerDB@@ which lists all models in the database, @@spower show exercise.SEQPowerDB <model name>@@ which lists all column names in one model table.
+spower show exercise.SEQPowerDB
+spower show exercise.SEQPowerDB LOGIT
+# To select power analysis result of interest, for example
+spower show exercise.SEQPowerDB LOGIT method power title --condition "where power between 0.25 and 0.95"
+#{text results from exercise.SEQPowerDB
++---------+-------+-------------------------+
+|  method | power |          title          |
++---------+-------+-------------------------+
+| CFisher | 0.289 | Kryukov2009European1800 |
+| CFisher | 0.31  | Kryukov2009European1800 |
+|    K1   | 0.347 | Kryukov2009European1800 |
+| CFisher | 0.772 | Kryukov2009European1800 |
+| CFisher | 0.795 | Kryukov2009European1800 |
++---------+-------+-------------------------+
+#}
+# Although power analysis results of interest are selected from SEQPower database, the output is confusing since we cannot tell from the output under which scenarios the power estimates are obtained.
+#!! Run SEQPower commands in shell with unique IDs
+# Next we use simple shell commands to run power calculation in batch mode, assigning unique identifiers to each calculation (the @@--title@@ option), and extract output from the result database. We now save everything to a new database called @@exercise2.SEQPowerDB@@.
+#{bash SEQPower in batch mode
+for i in 1 1.5 2 2.5 3 3.5 4; do
+spower LOGIT Kryukov2009European1800.sfs --sample_size 1000 --OR_rare_detrimental $i \
+       --method "CFisher --name CMC$i" --title FixedOR$i \
+       -r 100 -j 4 -l 1 -o exercise2
+done
+#}
+# A range of fixed odds ratios from 1 to 4 are evaluated. For a quick demonstration we only use 100 replicates for each calculation. To view the output:
+spower show exercise2.SEQPowerDB LOGIT method power title
+#{text results from exercise2.SEQPowerDB
++--------+-------+------------+
+| method | power |   title    |
++--------+-------+------------+
+|  CMC1  |   0   |  FixedOR1  |
+| CMC1.5 |  0.28 | FixedOR1.5 |
+|  CMC2  |  0.74 |  FixedOR2  |
+| CMC2.5 |  0.84 | FixedOR2.5 |
+|  CMC3  |  0.9  |  FixedOR3  |
+| CMC3.5 |   1   | FixedOR3.5 |
+|  CMC4  |   1   |  FixedOR4  |
++--------+-------+------------+
+#}
+#! Reference
+# [1] Li B, Leal SM. Methods for detecting associations with rare variants for common diseases: application to analysis of sequence data. Am J Hum Genet 2008 83:311-21 
+# [2] Madsen BE, Browning SR. A groupwise association test for rare mutations using a weighted sum statistic. PLoS Genet 2009 5: e1000384 
+# [3] Liu DJ, Leal SM. A novel adaptive method for the analysis of next-generation sequencing data to detect complex trait associations with rare variants due to gene main effects and interactions. PLoS Genet 2010 6:e1001156
+# [4] Price AL, Kryukov GV, de Bakker PI, Purcell SM, Staples J, Wei LJ, Sunyaev SR. Pooled association tests for rare variants in exon-resequencing studies. Am J Hum Genet 20010 86:832-8.
+# [5] Wu MC, Lee S, Cai T, Li Y, Boehnke M, Lin X. Rare-variant association testing for sequencing data with the sequence kernel association test. Am J Hum Genet 2011 89:82-93. 
+# [6] Williamson SH, Hernandez R, Fledel-Alon A, Zhu L, Nielsen R, Bustamante CD. Simultaneous inference of selection and population growth from patterns of variation in the human genome. Proc Natl Acad Sci U S A. 2005 102:7882-7 
+# [7] Boyko AR, Williamson SH, Indap AR, Degenhardt JD, Hernandez RD, Lohmueller KE, Adams MD, Schmidt S, Sninsky JJ, Sunyaev SR, White TJ, Nielsen R, Clark AG, Bustamante CD. Assessing the evolutionary impact of amino acid mutations in the human genome. PLoS Genet 2008 4:e1000083  
+# [8] Kryukov GV, Shpunt A, Stamatoyannopoulos JA, Sunyaev SR. Power of deep, all-exon resequencing for discovery of human trait genes.  Proc Natl Acad Sci U S A. 2009 106:3871-6

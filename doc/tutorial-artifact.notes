@@ -1,0 +1,33 @@
+###
+#! Emulating genotyping artifact
+###
+# For empirical power calculations it is possible to model sequencing / genotyping artifact such as missing variant sites, missing genotypes and genotype call errors. We apply a simple probabilistic model to each type of artifact by specifying a probability it occurs, at variant or genotype call levels.
+
+###
+# Missing the entire variant site
+###
+# The @@--missing_sites@@ and @@--missing_sites_[type]@@ options randomly removes a given proportion of variants or variants of specific functional type from association analysis, as if these variant sites are missing or filtered out in association analysis quality control procedures. In effect, potentially causal variants will be excluded from power analysis, resulting in a loss of power. For example,
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP --method CFisher -r 500 -j8
+# results in power around 0.52. If we set 20% of the variant sites as missing the power drops to 0.46: 
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP --method CFisher -r 500 -j8 \
+       --missing_sites 0.2
+
+###
+# Missing genotype calls
+###
+# The @@--missing_calls@@ and @@--missing_calls_[type]@@ options randomly removes a given proportion of genotype calls on each variant site or variant sites of specific functional type, as if these calls are missing or filtered out in association analysis quality control procedures. Randomly missing genotypes will also result in a loss of power. For example,
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP --method CFisher -r 500 -j8
+# results in power around 0.52. If we set 20% of the genotype calls as missing we observe a reduction in power: 
+spower LOGIT KIT.gdat -a 1.5 --sample_size 2000 --alpha 0.05 -v2 -o K1AP --method CFisher -r 500 -j8 \
+       --missing_calls 0.2
+#{-----
+###
+# Missing low MAF variant sites
+###
+# [to be updated]
+
+###
+# Genotyping errors
+###
+# [to be updated]
+#}-------
