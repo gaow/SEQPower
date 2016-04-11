@@ -1,6 +1,7 @@
 ###
 # EVS data derived haplotype pool
 ###
+# This tutorial explains how the EVS dataset for SEQPower was generated from resource on the Exome Variant Server.
 wget http://evs.gs.washington.edu/evs_bulk_data/ESP6500SI-V2.snps_indels.vcf.tar.gz
 #{text evs.fmt
 file:///~/Dropbox/Archive/Research/Projects2013/NSHLExomes/evs.fmt
