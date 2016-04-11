@@ -10,6 +10,7 @@
 from glob import glob
 [parameters]
 pages = sorted(glob("*.notes"))
+sidebar_exclude = ['docker-guide']
 
 [default_1: alias = 'tigernotes']
 # Generate pages
@@ -33,6 +34,8 @@ res = {}
 for name in glob('sidebar.*.txt'):
     with open(name) as f:
         x, y, z = f.read().split('::')
+        if z.strip()[:-4] in ${sidebar_exclude!r}.split():
+            continue
         if x.strip() not in res:
             res[x.strip()] = []
         res[x.strip()].append((y.strip(), z.strip()[:-4]))

@@ -2,7 +2,10 @@
 #! About
 ###
 # SEQPower provides statistical power analysis and sample size estimation for sequence-based association studies
-
+###
+# Download
+###
+#[{{icons:download.png?64}}|@http://www.bioinformatics.org/spower/ccount/click.php?id=3@]
 ###
 # Developers
 ###

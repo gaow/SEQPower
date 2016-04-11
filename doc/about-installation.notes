@@ -4,9 +4,16 @@
 ###
 # SEQPower docker image
 ###
-#[{{icons:download.png?64}}|@http://bioinformatics.org/spower/404@]
 # Starting from version 1.1.0, binary release for Linux and MacOS are no longer supported. Instead we release Docker image for SEQPower which can be executed on both Linux and MacOS.
-# To run SEQPower with docker ... ""[to be updated!]""
+# In order to run the docker image we provide, you should have Docker installed on your machine. If you do not have Docker, please follow this [jump-start guide|@docker-guide@] to it up on your system. Otherwise you can pull the docker image and run it:
+docker pull gaow/seqx
+docker run gaow/seqx \
+       spower -h
+# It is recommended that you add to your shell configuration script (@@~/.bashrc@@ on Linux and @@~/.bash_profile@@ on Mac)
+alias spower='docker run gaow/seqx spower'
+# So next time you can simply run
+spower -h
+# to evoke the program instead of having to type @@docker run@@ command.
 ###
 # Supporting data
 ###

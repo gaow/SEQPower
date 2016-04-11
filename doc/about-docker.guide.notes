@@ -1,0 +1,20 @@
+###
+#! A jump-start guide to Docker setup
+###
+#! Docker setup for Mac users
+#[{{icons:globe_32.png?16}}|@https://docs.docker.com/mac/@]
+#! Docker setup for Linux users
+#!! Debian Jessie
+sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo "deb [arch=amd64] https://apt.dockerproject.org/repo debian-jessie main" | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+sudo apt-get install docker-engine
+#!! Ubuntu 14.04
+sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+sudo apt-get install docker-engine
+#!! Add docker usrgroup to your username
+# After Docker is installed,
+sudo usermod -aG docker $USER
+# Then reboot your computer for the changes to take effect (Or restart docker daemon and re-login if you hate to reboot).
