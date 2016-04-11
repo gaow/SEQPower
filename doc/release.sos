@@ -3,8 +3,8 @@
 
 # This script will compile and publish wiki pages to SEQPower website <br>
 # Publish all pages: <br>
-# ./release.sos
-# Publish given pages:
+# ./release.sos<br>
+# Publish given pages:<br>
 # ./release.sos --pages a.notes b.notes
 
 from glob import glob
@@ -25,6 +25,7 @@ fi
 echo ${_type} "::" `grep -v '~' ${_output} | grep . | head -1 | sed 's/=//g'` "::" ${_output} > sidebar.${_output}
 
 [default_2: alias = 'sidebar']
+# Generate sidebar
 output: 'sidebar.txt'
 python:
 from glob import glob

@@ -1,19 +1,16 @@
 FROM debian:jessie
 
 RUN apt-get update && \
-	apt-get -y install build-essential gcc g++ gfortran swig wget bzip2 ca-certificates libmysqlclient-dev && \
-	rm -rf /var/lib/apt/lists/*
+	apt-get -y install bzip2 wget
 
-RUN wget --quiet https://repo.continuum.io/archive/Anaconda-2.3.0-Linux-x86_64.sh && \
-    /bin/bash Anaconda-2.3.0-Linux-x86_64.sh -b -p /opt/conda && \                                 
-    rm Anaconda-2.3.0-Linux-x86_64.sh && \                                                         
-    /opt/conda/bin/conda install --yes conda==3.10.1
+RUN echo "Downloading SEQDocker ..."
+RUN wget --quiet http://bioinformatics.org/spower/download/.private/SEQDocker.tar.bz2
+RUN wget --quiet http://bioinformatics.org/spower/download/.private/SEQLinkageResources.tar.bz2
 
-ENV PATH /opt/conda/bin:$PATH
-
-ADD . .
-
-RUN python setup.py install --prefix /opt/spower
-
-ENV PATH /opt/spower/bin:$PATH
-ENV PYTHONPATH /opt/spower/lib/python2.7/site-packages:$PYTHONPATH
+RUN echo "Install SEQDocker ..."
+RUN mkdir -p /opt/gaow
+RUN tar jxf SEQDocker.tar.bz2 -C /opt/gaow
+RUN tar jxf SEQLinkageResources.tar.bz2 -C $HOME
+ENV PATH $HOME/.SEQLinkage/bin:/opt/gaow/bin:$PATH
+ENV PYTHONPATH /opt/gaow/lib/python2.7/site-packages:$PYTHONPATH
+RUN echo "Installation complete!"
