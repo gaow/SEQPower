@@ -35,7 +35,7 @@ for name in glob('sidebar.*.txt'):
         if x.strip() not in res:
             res[x.strip()] = []
         res[x.strip()].append((y.strip(), z.strip()[:-4]))
-text = ''
+text = '~~NOCACHE~~\n'
 for k in sorted(res.keys()):
     start_page = [x[1] for x in res[k] if x[0].lower() == k.lower()][0]
     text += '#{{list\n# ""[{}|@{}@]""\n'.format(k.capitalize(), start_page)
