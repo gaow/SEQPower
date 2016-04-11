@@ -22,7 +22,7 @@ if [[ ${_input!r} == "about-start.notes" ]]; then
 else
     tigernotes dokuwiki ${_input} -o ${_output} --lite --showall --compact_toc
 fi
-echo ${_type} "::" `grep -v '~' ${_output} | head -1 | sed 's/=//g'` "::" ${_output} > sidebar.${_output}
+echo ${_type} "::" `grep -v '~' ${_output} | grep . | head -1 | sed 's/=//g'` "::" ${_output} > sidebar.${_output}
 
 [default_2: alias = 'sidebar']
 output: 'sidebar.txt'
@@ -35,7 +35,7 @@ for name in glob('sidebar.*.txt'):
         if x.strip() not in res:
             res[x.strip()] = []
         res[x.strip()].append((y.strip(), z.strip()[:-4]))
-text = '~~NOCACHE~~\n'
+text = '#~~NOCACHE~~\n'
 for k in sorted(res.keys()):
     start_page = [x[1] for x in res[k] if x[0].lower() == k.lower()][0]
     text += '#{{list\n# ""[{}|@{}@]""\n'.format(k.capitalize(), start_page)
