@@ -351,6 +351,8 @@ class Calculator:
 class ResultManager:
     '''result to database and/or text file'''
     def __init__(self, output, dedup = True, action = 'w'):
+        if not isinstance(output, list):
+            output = [output, True, False, False]
         self.db = output[0] + '.SEQPowerDB'
         self.basename = output[0]
         if sqlite3_support and output[1]:
