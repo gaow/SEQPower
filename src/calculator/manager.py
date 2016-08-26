@@ -353,7 +353,7 @@ class ResultManager:
     def __init__(self, output, dedup = True, action = 'w'):
         if not isinstance(output, list):
             output = [output, True, False, False]
-        self.db = output[0] + '.SEQPowerDB'
+        self.db = output[0] + ('.SEQPowerDB' if not output[0].endswith('.SEQPowerDB') else '')
         self.basename = output[0]
         if sqlite3_support and output[1]:
             conn = sqlite3.Connection(self.db, timeout = 60000)
