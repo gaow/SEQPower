@@ -120,6 +120,7 @@ def downloadURL(URL, dest, quiet, message=None):
         pass
 
     # use python urllib?
+    import urllib
     try:
         urllib.URLopener().open(URL)
     except IOError as error_code:
