@@ -7,11 +7,11 @@
 # Starting from version 1.1.0, binary release for Linux and MacOS are no longer supported. Instead we release Docker image for SEQPower which can be executed on both Linux and MacOS. Although overall execution time of a command ""may increase by over 10%"", we believe the straightforward installation and guaranteed reproducibility are well worth the loss in speed.
 # In order to run the docker image we provide, you should have Docker installed on your machine. If you do not have Docker, please follow this [jump-start guide|@docker-guide@] to it up on your system. Otherwise you can pull the docker image and run it:
 docker pull gaow/seqx
-docker run --rm --security-opt label:disable -v ${HOME%%/${USER}}:/home -v /tmp:/tmp \
+docker --rm --security-opt label:disable -v ${HOME%%/${USER}}:/home -v /tmp:/tmp -v $PWD:$PWD\
        -t -P -w $PWD -u $UID:${GROUPS[0]} gaow/seqx \
        spower -h
 # It is recommended that you add to your shell configuration script (@@~/.bashrc@@ on Linux and @@~/.bash_profile@@ on Mac)
-alias spower='docker run --rm --security-opt label:disable -v ${HOME%%/${USER}}:/home -v /tmp:/tmp -t -P -w $PWD -u $UID:${GROUPS[0]} gaow/seqx spower'
+alias spower='docker run --rm --security-opt label:disable -v ${HOME%%/${USER}}:/home -v /tmp:/tmp -v $PWD:$PWD -t -P -w $PWD -u $UID:${GROUPS[0]} gaow/seqx spower'
 # So next time you can simply run
 spower -h
 # to evoke the program instead of having to type @@docker run@@ command.
